@@ -2,7 +2,7 @@ import logging
 from logging import Logger
 from typing import MutableMapping, Optional
 
-from settings.section import SettingsSection
+from .section import SettingsSection
 
 log: Logger = logging.getLogger(__name__)
 

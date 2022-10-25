@@ -8,9 +8,9 @@ class Column:
     An object containing metadata needed to construct a database table column
     """
 
-    def __init__(self) -> None:
-        self._name: Optional[str] = None
-        self._type: Optional[str] = None
+    def __init__(self, name: str = '', type: str = '') -> None:
+        self._name: str = name
+        self._type: str = type
         self._is_unique: bool = False
         self._is_primary: bool = False
 

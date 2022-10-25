@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional
 from discord import Client, Intents
 from discord.app_commands import CommandTree
 
-from loader import Loader
-from settings import Settings
+from bot.loader import Loader
+from bot.settings import Settings
 
 log: Logger = logging.getLogger(__name__)
 

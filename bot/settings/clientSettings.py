@@ -3,12 +3,11 @@ from logging import Logger
 from pathlib import Path
 from typing import cast
 
-from configuration import Configuration
-from settings.data import DataSettings
-from settings.token import TokenSettings
+from ..configuration import Configuration
+from .data import DataSettings
+from .token import TokenSettings
 
 log: Logger = logging.getLogger(__name__)
-
 
 class ClientSettings(Configuration):
     def __init__(self, reference: Path = Path('./config.ini')) -> None:

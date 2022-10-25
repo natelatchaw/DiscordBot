@@ -2,11 +2,11 @@ import logging
 from logging import Logger
 from pathlib import Path
 from typing import cast
+
 from discord import Guild
 
-from configuration import Configuration
-from settings.clientSettings import ClientSettings
-from settings.guildSettings import GuildSettings
+from .clientSettings import ClientSettings
+from .guildSettings import GuildSettings
 
 log: Logger = logging.getLogger(__name__)
 

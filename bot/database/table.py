@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from database.column import Column
+from .column import Column
+
 
 class Table:
 
     @property
-    def _fully_qualified_name(self) -> Optional[str]:
+    def _fully_qualified_name(self) -> str:
         terms: List[str] = list()
         # add the schema to the list of terms if it exists
         if self._schema: terms.append(self._schema)
@@ -36,7 +37,7 @@ class Table:
         # add the if not exists term to the list of terms if marked
         if if_not_exists: terms.append('IF NOT EXISTS')
         # add the name to the list of terms if it exists
-        if self._name: terms.append(self._fully_qualified_name)
+        terms.append(self._fully_qualified_name)
         # join the terms with a space character
         sql: str = ' '.join(terms)
         
@@ -113,7 +114,7 @@ class Table:
         # add the if exists term to the list of terms if marked
         if if_exists: terms.append('IF EXISTS')
         # add the name to the list of terms if it exists
-        if self._name: terms.append(self._fully_qualified_name)
+        terms.append(self._fully_qualified_name)
         # join the terms with a space character
         sql: str = ' '.join(terms)
 

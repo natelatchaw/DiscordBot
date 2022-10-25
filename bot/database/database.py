@@ -1,11 +1,10 @@
-
 import sqlite3
 from pathlib import Path
 from sqlite3 import Connection, Row
 from typing import List, Type
 
-from database.storable import TStorable
-from database.table import Table
+from .storable import TStorable
+from .table import Table
 
 
 class Database():

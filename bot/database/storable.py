@@ -1,18 +1,16 @@
-
 from abc import abstractmethod
 from sqlite3 import Row
 from typing import Any, Protocol, Tuple, Type, TypeVar
 
-from database.table import Table
+from .table import Table
 
 TStorable = TypeVar('TStorable', bound='Storable')
-
 
 class Storable(Protocol):
     
     @classmethod
     @abstractmethod
-    def __table__(self) -> Table:
+    def __table__(cls) -> Table:
         raise NotImplementedError()
 
     @abstractmethod

@@ -3,8 +3,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Optional
 
-from configuration import Configuration
-from configuration.section import Section
+from ..configuration.section import Section
 
 log: Logger = logging.getLogger(__name__)
 

@@ -2,12 +2,12 @@ import logging
 from logging import Logger
 from pathlib import Path
 from typing import cast
+
 from discord import Guild
 
-from configuration import Configuration
-
-from settings.limiting import LimiterSettings
-from settings.ux import UXSettings
+from ..configuration import Configuration
+from .limiting import LimiterSettings
+from .ux import UXSettings
 
 log: Logger = logging.getLogger(__name__)
 

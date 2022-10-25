@@ -8,10 +8,6 @@ from typing import Dict, Iterator, List, MutableMapping
 
 from .section import Section
 
-__all__: List[str] = [
-    "Configuration"
-]
-
 log: Logger = logging.getLogger(__name__)
 
 class Configuration(MutableMapping[str, Section]):

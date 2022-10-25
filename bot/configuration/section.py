@@ -5,11 +5,6 @@ from logging import Logger
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional
 
-
-__all__: List[str] = [
-    "Section"
-]
-
 log: Logger = logging.getLogger(__name__)
 
 class Section(MutableMapping[str, str]):
