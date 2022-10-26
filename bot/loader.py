@@ -6,7 +6,6 @@ from asyncio import AbstractEventLoop
 from importlib.machinery import ModuleSpec
 from logging import Logger
 from pathlib import Path
-from subprocess import call
 from types import MethodType, ModuleType
 from typing import Any, List, NoReturn, Optional, Tuple, Type
 from discord.abc import Snowflake
