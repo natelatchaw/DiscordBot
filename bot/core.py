@@ -69,7 +69,8 @@ class Core(Client):
         log.info('Loading application commands')
         # load components from the directory
         await self._loader.load(self.components, loop=self.loop, *args, **kwargs)
-        log.info('Syncing application commands')
+        
+        if sync: log.info(f'Syncing application commands')
         # sync the loader's commands
         if sync: await self._loader.sync(guild=None)
 
