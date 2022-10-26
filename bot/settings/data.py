@@ -28,6 +28,15 @@ class DataSettings(SettingsSection):
         self[key] = str(reference)
 
     @property
+    def sync(self) -> Optional[bool]:
+        key: str = "sync_commands"
+        return self.get_boolean(key)
+    @sync.setter
+    def sync(self, value: bool) -> None:
+        key: str = "sync_commands"
+        self[key] = str(value)
+
+    @property
     def owner(self) -> Optional[int]:
         key: str = "owner"
         return self.get_integer(key)
