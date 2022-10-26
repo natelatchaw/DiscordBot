@@ -85,8 +85,7 @@ class Loader():
                     except KeyboardInterrupt: return
                     # catch class object initialization errors
                     except TypeError as error:
-                        log.debug(f'Ignoring class {class_object.__name__}: Initialization failed')
-                        log.debug(error)
+                        log.debug(f'Ignoring class {class_object.__name__}: Initialization failed: {error}')
                     except Exception as error:
                         log.debug(f'Ignoring class {class_object.__name__}: Initialization failed; unhandled {error.__class__.__name__}: {error}')
             
@@ -94,10 +93,8 @@ class Loader():
             # catch module reference initialization errors
             except NameError as error:
                 log.debug(f'Ignoring module {reference.name}: Initialization failed; error in module source: {error}')
-                log.debug(error)
             except ModuleNotFoundError as error:
                 log.debug(f'Ignoring module {reference.name}: Initialization failed; dependency unavailable: {error}')
-                log.debug(error)
             except Exception as error:
                 log.debug(f'Ignoring module {reference.name}: Initialization failed; unhandled {error.__class__.__name__}: {error}')
 
