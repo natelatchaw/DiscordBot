@@ -7,7 +7,7 @@ from importlib.machinery import ModuleSpec
 from logging import Logger
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, List, NoReturn, Optional, Tuple, Type
+from typing import Any, Awaitable, Coroutine, List, NoReturn, Optional, Tuple, Type
 from discord.abc import Snowflake
 
 from discord.app_commands import Command, CommandTree
@@ -84,13 +84,24 @@ class Loader():
 
                     except KeyboardInterrupt: return
                     # catch class object initialization errors
+                    except TypeError as error:
+                        log.warn(f'Initialization failed for class {class_object.__name__}')
+                        log.debug(error)
                     except Exception as error:
-                        log.error(f'{class_object.__name__}: {error}')
+                        log.warn(f'Initialization failed for class {class_object.__name__}: unhandled error')
+                        log.debug(f'[{error.__class__.__name__}] {error}')
             
             except KeyboardInterrupt: return
             # catch module reference initialization errors
+            except NameError as error:
+                log.warn(f'Initialization failed for module {reference.name}: error in module source')
+                log.debug(error)
+            except ModuleNotFoundError as error:
+                log.warn(f'Initialization failed for module {reference.name}: dependency unavailable')
+                log.debug(error)
             except Exception as error:
-                log.error(f'{reference.name}: {error}')
+                log.warn(f'Initialization failed for module {reference.name}: unhandled error')
+                log.debug(f'[{error.__class__.__name__}] {error}')
 
 
     async def sync(self, *, guild: Optional[Snowflake] = None) -> None:
@@ -124,8 +135,12 @@ class Loader():
             try:
                 # if the event loop is available
                 if loop:
+                    # assemble source string
+                    source: str = '.'.join([instance.__class__.__name__, hook_coroutine.__name__])
+                    # wrap hook coroutine in exception handler
+                    awaitable: Coroutine[Any, Any, Optional[Any]] = self.__log_exceptions__(hook_coroutine(*args, **kwargs), source=source)
                     # call the hook via a created task
-                    _: asyncio.Task[NoReturn] = loop.create_task(hook_coroutine(*args, **kwargs))
+                    _: asyncio.Task[NoReturn] = loop.create_task(awaitable)
                 # if the event loop is not available
                 else:
                     # call the hook and await the call
@@ -201,6 +216,13 @@ class Loader():
         exceeds_max_length: bool = len(docstring) > max_length
         # truncate docstring if necessary
         return docstring[:length] + TRUNCATOR if exceeds_max_length else docstring
+
+
+    async def __log_exceptions__(self, awaitable: Awaitable, source: Optional[str]) -> Coroutine[Any, Any, Optional[Any]]:
+        try:
+            return await awaitable
+        except Exception as error:
+            log.warn(f'{source}: {error}')
 
 
 class HandlerError(Exception):
