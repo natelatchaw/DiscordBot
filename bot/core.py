@@ -53,7 +53,7 @@ class Core(Client):
         Calls necessary logic for loading application commands
         """
         # determine whether to sync application commands
-        sync: bool = self._settings.client.data.sync if self._settings.client.data.sync else True
+        sync: bool = self._settings.client.data.sync if self._settings.client.data.sync is not None else True
 
         # initialize the command loader
         self._loader: Loader = Loader(CommandTree(self))
@@ -69,7 +69,7 @@ class Core(Client):
         log.info('Loading application commands')
         # load components from the directory
         await self._loader.load(self.components, loop=self.loop, *args, **kwargs)
-        
+
         if sync: log.info(f'Syncing application commands')
         # sync the loader's commands
         if sync: await self._loader.sync(guild=None)
