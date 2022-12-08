@@ -21,10 +21,19 @@ class DataSettings(SettingsSection):
     @property
     def components(self) -> Optional[Path]:
         key: str = "components"
-        return self.get_path(key)
+        return self.get_directory(key)
     @components.setter
     def components(self, reference: Path) -> None:
         key: str = "components"
+        self[key] = str(reference)
+    
+    @property
+    def log_config(self) -> Optional[Path]:
+        key: str = "log_config"
+        return self.get_file(key)
+    @log_config.setter
+    def log_config(self, reference: Path) -> None:
+        key: str = "log_config"
         self[key] = str(reference)
 
     @property

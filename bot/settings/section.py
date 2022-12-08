@@ -62,7 +62,7 @@ class SettingsSection(Section):
         else:
             return raw_value
 
-    def get_path(self, key: str) -> Optional[Path]:
+    def get_directory(self, key: str) -> Optional[Path]:
         raw_value: Optional[str] = None
         try:
             raw_value = self[key]
@@ -75,6 +75,21 @@ class SettingsSection(Section):
         else:
             return self.__create_directory__(key, raw_value)
 
+    def get_file(self, key: str, create: bool = True) -> Optional[Path]:
+        raw_value: Optional[str] = None
+        try:
+            raw_value = self[key]
+        except KeyError:
+            self[key] = ''
+        if not raw_value:
+            return None
+        elif not isinstance(raw_value, str):
+            return None
+        elif not create:
+            return None
+        else:
+            return self.__create_file__(key, raw_value)
+
         
     def __create_directory__(self, key: str, value: str) -> Path:
         directory: Path = Path(value).resolve()
@@ -85,3 +100,14 @@ class SettingsSection(Section):
         else:
             log.debug("Existing %s directory found at %s", key, directory)
             return directory
+
+        
+    def __create_file__(self, key: str, value: str) -> Path:
+        file: Path = Path(value).resolve()
+        if not file.exists():
+            log.debug("Starting %s file creation at %s", key, file)
+            file.touch(exist_ok=True)
+            return file
+        else:
+            log.debug("Existing %s file found at %s", key, file)
+            return file

@@ -1,7 +1,7 @@
 import logging
 from logging import Logger
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from discord import Client, Intents
 from discord.app_commands import CommandTree
@@ -36,8 +36,9 @@ class Core(Client):
         return components
 
 
-    def __init__(self) -> None:
+    def __init__(self, configure: Optional[Callable[[Settings], None]] = None) -> None:
         self._settings: Settings = Settings()
+        if configure: configure(self._settings)
         super().__init__(intents=Intents(self.permissions))
 
 
