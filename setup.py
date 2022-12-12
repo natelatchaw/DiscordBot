@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='DiscordBot',
-    version='0.0.2',
-    description='A discord bot client with dynamic command import',
+    version='0.1.0',
+    description='A discord.py bot implementation with dynamic command import',
     author='Nathan Latchaw',
     author_email='natelatchaw@gmail.com',
     license='Creative Commons',
