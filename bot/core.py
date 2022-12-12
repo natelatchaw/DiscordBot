@@ -18,21 +18,21 @@ class Core(Client):
     def permissions(self) -> int:
         permissions: Optional[int] = self._settings.client.data.permissions
         if permissions is None:
-            raise ValueError('No permissions value provided.')
+            raise ValueError(f'{self._settings.client.data._reference}: No permissions value provided.')
         return permissions
 
     @property
     def token(self) -> str:
         token: Optional[str] = self._settings.client.token.current
         if not token:
-            raise ValueError('No token value provided.')
+            raise ValueError(f'{self._settings.client.token._reference}: No token value provided.')
         return token
 
     @property
     def components(self) -> Path:
         components: Optional[Path] = self._settings.client.data.components
         if not components:
-            raise ValueError('No components directory provided.')
+            raise ValueError(f'{self._settings.client.data.components}: No components directory provided.')
         return components
 
 
