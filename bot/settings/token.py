@@ -32,3 +32,7 @@ class TokenSettings(SettingsSection):
     def value(self) -> Optional[str]:
         key: str = self.name
         return self.get_string(key)
+    @value.setter
+    def value(self, token: str) -> None:
+        key: str = self.name
+        return self.set_string(key, token)
