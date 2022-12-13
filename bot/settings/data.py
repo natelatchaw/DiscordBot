@@ -10,46 +10,65 @@ log: Logger = logging.getLogger(__name__)
 class DataSettings(SettingsSection):
     
     @property
-    def permissions(self) -> Optional[int]:
-        key: str = "permissions"
-        return self.get_integer(key)
+    def permissions(self) -> int:
+        """
+        Gets the permissions integer from configuration.
+
+        Raises:
+        - ValueError: If permissions integer is missing or invalid
+        """
+        return self.get_integer('permissions')
     @permissions.setter
     def permissions(self, flag: int) -> None:
-        key: str = "permissions"
-        self[key] = str(flag)
+        """
+        Sets the permissions integer in configuration.
+        """
+        return self.set_integer('permissions', flag)
     
     @property
-    def components(self) -> Optional[Path]:
-        key: str = "components"
-        return self.get_directory(key)
+    def components(self) -> Path:
+        """
+        Gets the path of the components directory from configuration.
+
+        Raises:
+        - ValueError: If components directory is missing or invalid
+        """
+        return self.get_directory('components')
     @components.setter
     def components(self, reference: Path) -> None:
-        key: str = "components"
-        self[key] = str(reference)
-    
-    @property
-    def log_config(self) -> Optional[Path]:
-        key: str = "log_config"
-        return self.get_file(key)
-    @log_config.setter
-    def log_config(self, reference: Path) -> None:
-        key: str = "log_config"
-        self[key] = str(reference)
+        """
+        Sets the path of the components directory in configuration.
+        """
+        return self.set_directory('components', reference)
 
     @property
     def sync(self) -> Optional[bool]:
-        key: str = "sync_commands"
-        return self.get_boolean(key)
+        """
+        Gets the command sync setting from configuration.
+
+        Raises:
+        - ValueError: If command sync boolean is missing or invalid
+        """
+        return self.get_boolean('sync_commands')
     @sync.setter
     def sync(self, value: bool) -> None:
-        key: str = "sync_commands"
-        self[key] = str(value)
+        """
+        Sets the command sync setting in configuration.
+        """
+        return self.set_boolean('sync_commands', value)
 
     @property
-    def owner(self) -> Optional[int]:
-        key: str = "owner"
-        return self.get_integer(key)
+    def owner(self) -> int:
+        """
+        Gets the owner's ID from configuration.
+
+        Raises:
+        - ValueError: If owner ID is missing or invalid
+        """
+        return self.get_integer('owner')
     @owner.setter
     def owner(self, value: int) -> None:
-        key: str = "owner"
-        self[key] = str(value)
+        """
+        Sets the owner's ID in configuration.
+        """
+        return self.set_integer('owner', value)

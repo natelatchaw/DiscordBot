@@ -23,7 +23,7 @@ class Core(Client):
 
     @property
     def token(self) -> str:
-        token: Optional[str] = self._settings.client.token.current
+        token: Optional[str] = self._settings.client.token.value
         if not token:
             raise ValueError(f'{self._settings.client.token._reference}: No token value provided.')
         return token
@@ -36,9 +36,8 @@ class Core(Client):
         return components
 
 
-    def __init__(self, configure: Optional[Callable[[Settings], None]] = None) -> None:
-        self._settings: Settings = Settings()
-        if configure: configure(self._settings)
+    def __init__(self, settings: Optional[Settings] = None) -> None:
+        self._settings: Settings = settings if settings else Settings()
         super().__init__(intents=Intents(self.permissions))
 
 

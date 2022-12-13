@@ -10,26 +10,29 @@ from .core import Core
 from .settings import Settings
 
 log: Logger = logging.getLogger(__name__)
+print(log.name)
 
 async def main() -> None:
     client: Optional[Core] = None
+    settings: Settings = Settings()
+    configure_logger(settings)
     try:
-        client = Core(configure)
+        client = Core(settings)
         await client.start(client.token)
     except Exception as error:
         log.error(error)
     finally:
         if client: await client.close()
 
-def configure(settings: Settings):
-    log_config: Optional[Path] = None
+
+def configure_logger(settings: Settings):
     try:
-        log_config = settings.client.data.log_config
+        log_config: Path = settings.client.logger.config
         if log_config: fileConfig(log_config)
-    except KeyError as error:
-        log.warning(f'Failed to load {log_config if log_config else "log config"}: Missing entry for {error}')
+    except ValueError as error:
+        log.warning(error)
     except Exception as error:
-        log.warning(f'Failed to load {log_config if log_config else "log config"}: {error}.')
+        log.warning(f'Failed to load logger configuration: {error}.')
 
 try:
     asyncio.run(main())

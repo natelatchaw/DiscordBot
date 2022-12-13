@@ -1,6 +1,6 @@
 import logging
 from logging import Logger
-from typing import MutableMapping, Optional
+from typing import MutableMapping, Optional, cast
 
 from .section import SettingsSection
 
@@ -8,31 +8,27 @@ log: Logger = logging.getLogger(__name__)
 
 class TokenSettings(SettingsSection):
     @property
-    def active(self) -> str:
-        defaults: MutableMapping[str, str] = self._parser.defaults()  # type: ignore
-        key: str = "token"
-        value: Optional[str] = None
+    def name(self, key: str = 'token') -> str:
+        defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self._parser.defaults())
         try:
-            value = defaults[key]
-        except KeyError:
-            defaults[key] = ""
-
-        if value and isinstance(value, str):
-            return value
-        else:
-            defaults[key] = ""
+            raw_value: str = defaults[key]
+            if not raw_value: raise KeyError()
+            value: str = str(raw_value)
+        except KeyError as error:
+            defaults[key] = str()
             self.__write__()
-            raise ValueError(
-                f"No label provided for {self._reference.name}:{self._name}:{key}"
-            )
+            raise ValueError(f'{self._reference}:{self._name}:{key}: Missing token name') from error
+        except Exception as error:
+            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid token name') from error
+        else:
+            return value
 
-    @active.setter
-    def active(self, value: str) -> None:
-        key: str = "token"
-        defaults: MutableMapping[str, str] = self._parser.defaults()  # type: ignore
+    @name.setter
+    def name(self, value: str, key: str = 'token') -> None:
+        defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self._parser.defaults())
         defaults[key] = value
 
     @property
-    def current(self) -> Optional[str]:
-        key: str = self.active
+    def value(self) -> Optional[str]:
+        key: str = self.name
         return self.get_string(key)
