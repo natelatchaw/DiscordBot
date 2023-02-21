@@ -75,7 +75,7 @@ class Loader():
                             # handle coroutine registration
                             try:
                                 # add the coroutine as a command
-                                await self.__register_coroutine_(method_object)
+                                await self.__register_coroutine__(method_object)
 
                             except KeyboardInterrupt: return
                             # catch method object initialization errors
@@ -180,7 +180,7 @@ class Loader():
         return [member_object for member_name, member_object in members]
 
 
-    async def __register_coroutine_(self, coroutine: MethodType):
+    async def __register_coroutine__(self, coroutine: MethodType):
         """
         Register the provided coroutine as a command
         """
