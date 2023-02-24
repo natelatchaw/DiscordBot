@@ -3,7 +3,7 @@ from collections.abc import MutableMapping
 from configparser import ConfigParser, NoOptionError
 from logging import Logger
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional
+from typing import Iterator
 
 log: Logger = logging.getLogger(__name__)
 

@@ -10,18 +10,39 @@ class LimiterSettings(SettingsSection):
 
     @property
     def rate(self) -> Optional[float]:
+        """
+        The time duration in seconds during which to allow a specific number of commands.
+        """
+
         key: str = "rate"
-        return self.get_float(key)
+        try:
+            return self.get_float(key)
+        except ValueError:
+            return None
+        
+        
     @rate.setter
-    def rate(self, value: float) -> None:
+    def rate(self, value: Optional[float]) -> None:
         key: str = "rate"
-        self[key] = str(value)
+        if value:
+            self.set_float(key, value)
+        else:
+            self.set_string(key, str())
 
 
     @property
     def count(self) -> Optional[int]:
+        """
+        The number of commands to allow within the span of a specific time duration.
+        """
+
         key: str = "count"
-        return self.get_integer(key)
+        try:
+            return self.get_integer(key)
+        except ValueError:
+            return None
+        
+
     @count.setter
     def count(self, value: int) -> None:
         key: str = "count"

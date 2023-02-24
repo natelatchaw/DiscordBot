@@ -1,6 +1,5 @@
 import logging
 from logging import Logger
-from pathlib import Path
 from typing import Optional
 
 from .section import SettingsSection

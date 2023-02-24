@@ -1,7 +1,6 @@
 import logging
 from logging import Logger
 from pathlib import Path
-from typing import Optional
 
 from .section import SettingsSection
 
@@ -16,13 +15,17 @@ class LoggerSettings(SettingsSection):
         See: https://docs.python.org/3/library/logging.config.html#configuration-file-format
 
         Raises:
-        - ValueError: If logging config file path is missing or invalid
+        - ValueError: If logging config file path is invalid or inaccessible
         """
+
         return self.get_file('logging.ini')
+    
+
     @config.setter
     def config(self, reference: Path) -> None:
         """
         Sets the path of the logging.ini file in configuration.
         See: https://docs.python.org/3/library/logging.config.html#configuration-file-format
         """
-        return self.set_file('logging.ini', reference)
+
+        self.set_file('logging.ini', reference)

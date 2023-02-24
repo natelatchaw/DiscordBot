@@ -15,64 +15,50 @@ class SettingsSection(Section):
         If the key does not exist, it is created and given an empty value.
 
         Raises:
-        - ValueError: If value cannot be parsed to a string
+        - ValueError: If the provided key's value is missing or empty
         """
+
         try:
-            raw_value: str = self[key]
-            if not raw_value: raise KeyError()
-            value: str = str(raw_value)
+            value: str = self[key]
+            if not value: raise KeyError()
+            return str(value)
         except KeyError as error:
             self[key] = str()
             raise ValueError(f'{self._reference}:{self._name}:{key}: Missing value') from error
-        except Exception as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return value
+
 
     def set_string(self, key: str, value: Any) -> None:
         """
         Sets a string value for a given key.
-
-        Raises:
-        - ValueError: If value cannot be parsed to a string
         """
-        try:
-            self[key] = str(value)
-        except Exception as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return
 
-    def get_boolean(self, key: str) -> Optional[bool]:
+        self[key] = str(value)
+
+
+    def get_boolean(self, key: str) -> bool:
         """
         Gets an boolean value for a given key.
         If the key does not exist, it is created and given an empty value.
 
         Raises:
-        - ValueError: If value cannot be parsed to an boolean
+        - ValueError: If the provided key's value cannot be parsed to an boolean
         """
-        positives: List[str] = ['1', 'true', 'True', 'yes', 'y']
-        negatives: List[str] = ['0', 'false', 'False', 'no', 'n']
-        try:
-            value: bool = False
-            raw_value: str = self.get_string(key)
-            if not raw_value: raise ValueError()
-            elif raw_value in positives: value = True
-            elif raw_value in negatives: value = False
-            else: raise ValueError()
-        except ValueError as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return value
+
+        positives: List[str] = ['1', 'true', 'yes', 'y']
+        negatives: List[str] = ['0', 'false', 'no', 'n']
+        
+        raw_value: str = self.get_string(key).lower()
+        if raw_value in positives: return True
+        if raw_value in negatives: return False
+        raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value')
+
 
     def set_boolean(self, key: str, value: bool) -> None:
         """
         Sets an boolean value for a given key.
-
-        Raises:
-        - ValueError: If value cannot be parsed to a string
         """
-        return self.set_string(key, value)
+
+        self.set_string(key, value)
 
 
     def get_integer(self, key: str) -> int:
@@ -81,24 +67,23 @@ class SettingsSection(Section):
         If the key does not exist, it is created and given an empty value.
 
         Raises:
-        - ValueError: If value cannot be parsed to an integer
+        - ValueError: If the provided key's value is missing, empty,
+        or cannot be parsed to an integer
         """
+
+        value: str = self.get_string(key)
         try:
-            raw_value: str = self.get_string(key)
-            value: int = int(raw_value)
+            return int(value)
         except ValueError as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return value
+            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+
 
     def set_integer(self, key: str, value: int) -> None:
         """
         Sets an integer value for a given key.
-
-        Raises:
-        - ValueError: If value cannot be parsed to a string
         """
-        return self.set_string(key, value)
+
+        self.set_string(key, value)
 
 
     def get_float(self, key: str) -> float:
@@ -107,24 +92,22 @@ class SettingsSection(Section):
         If the key does not exist, it is created and given an empty value.
 
         Raises:
-        - ValueError: If value cannot be parsed to a float
+        - ValueError: If the provided key's value is missing, empty,
+        or cannot be parsed to an float
         """
+
+        value: str = self.get_string(key)
         try:
-            raw_value: str = self.get_string(key)
-            value: float = float(raw_value)
+            return float(value)
         except ValueError as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return value            
+            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+        
 
     def set_float(self, key: str, value: float) -> None:
         """
         Sets a float value for a given key.
-
-        Raises:
-        - ValueError: If value cannot be parsed to a string
         """
-        return self.set_string(key, value)
+        self.set_string(key, value)
 
 
     def get_directory(self, key: str) -> Path:
@@ -132,25 +115,22 @@ class SettingsSection(Section):
         Gets a Path value for a given key.
 
         Raises:
-        - ValueError: If the provided value cannot be parsed as a Path
+        - ValueError: If the provided key's Path value is invalid or inaccessible
         """
+        
+        value: str = self.get_string(key)
         try:
-            raw_value: str = self.get_string(key)
-            value: Path = Path(raw_value)
-            value = self.__create_directory__(value)
+            return self.__create_directory__(Path(value))
         except OSError as error:   
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return value
+            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+        
         
     def set_directory(self, key: str, value: Path) -> None:
         """
         Sets a string value for a given key.
-
-        Raises:
-        - ValueError: If value cannot be parsed to a string
         """
-        return self.set_string(key, value)
+
+        self.set_string(key, value)
 
 
     def get_file(self, key: str) -> Path:
@@ -158,47 +138,49 @@ class SettingsSection(Section):
         Gets a Path value for a given key.
 
         Raises:
-        - ValueError: If the provided value cannot be parsed as a Path
+        - ValueError: If the provided key's Path value is invalid or inaccessible
         """
+        
+        raw_value: str = self.get_string(key)
         try:
-            raw_value: str = self.get_string(key)
-            value: Path = Path(raw_value)
-            value = self.__create_file__(value)
-        except Exception as error:   
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value') from error
-        else:
-            return value
+            return self.__create_file__(Path(raw_value))
+        except OSError as error:
+            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+
 
     def set_file(self, key: str, value: Path) -> None:
         """
         Sets a string value for a given key.
-
-        Raises:
-        - ValueError: If value cannot be parsed to a string
         """
-        return self.set_string(key, value)
+
+        self.set_string(key, value)
 
 
-    def __create_directory__(self, value: Path) -> Path:
+    def __create_directory__(self, value: Path, parents: bool = True) -> Path:
+        """
+        Creates a directory at the provided Path if it does not already exist.
+        """
+
+        directory: Path = value.resolve()
         try:
-            directory: Path = value.resolve()
-            log.debug('%s directory at %s', 'Existing' if directory.exists() else 'Creating', directory)
-            if directory.exists(): return directory
-            directory.mkdir(parents=True, exist_ok=True)
-        except OSError as error:
-            log.warning(error)
-            raise
-        else:
+            directory.mkdir(parents=parents, exist_ok=False)
+            log.debug('Created directory at %s', directory)
             return directory
-        
+        except FileExistsError as error:
+            log.debug('Existing directory at %s: %s', directory, error)
+            return directory
+
+
     def __create_file__(self, value: Path) -> Path:
+        """
+        Creates a file at the provided Path if it does not already exist.
+        """
+
+        file: Path = value.resolve()
         try:
-            file: Path = value.resolve()
-            log.debug('%s file at %s', 'Existing' if file.exists() else 'Creating', file)
-            if file.exists(): return file
-            file.touch(exist_ok=True)
-        except Exception as error:
-            log.warning(error)
-            raise
-        else:
+            file.touch(exist_ok=False)
+            log.debug('Created file at %s', file)
+            return file
+        except FileExistsError as error:
+            log.debug('Existing file at %s: %s', file, error)
             return file

@@ -7,7 +7,7 @@ from importlib.machinery import ModuleSpec
 from logging import Logger
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, Awaitable, Coroutine, List, NoReturn, Optional, Tuple, Type
+from typing import Any, Awaitable, Coroutine, List, Never, NoReturn, Optional, Tuple, Type
 from discord.abc import Snowflake
 
 from discord.app_commands import Command, CommandTree
@@ -133,9 +133,9 @@ class Loader():
                     # assemble source string
                     source: str = '.'.join([instance.__class__.__name__, hook_coroutine.__name__])
                     # wrap hook coroutine in exception handler
-                    awaitable: Coroutine[Any, Any, Optional[Any]] = self.__log_exceptions__(hook_coroutine(*args, **kwargs), source=source)
+                    awaitable: Coroutine[Any, Any, Any] = self.__log_exceptions__(hook_coroutine(*args, **kwargs), source=source)
                     # call the hook via a created task
-                    _: asyncio.Task[NoReturn] = loop.create_task(awaitable)
+                    _: asyncio.Task[Any] = loop.create_task(awaitable)
                 # if the event loop is not available
                 else:
                     # call the hook and await the call
@@ -213,7 +213,7 @@ class Loader():
         return docstring[:length] + TRUNCATOR if exceeds_max_length else docstring
 
 
-    async def __log_exceptions__(self, awaitable: Awaitable, source: Optional[str]) -> Coroutine[Any, Any, Optional[Any]]:
+    async def __log_exceptions__(self, awaitable: Awaitable[Any], source: Optional[str]) -> Any:
         try:
             return await awaitable
         except Exception as error:
