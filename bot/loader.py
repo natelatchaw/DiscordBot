@@ -7,11 +7,10 @@ from importlib.machinery import ModuleSpec
 from logging import Logger
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, Awaitable, Coroutine, List, Never, NoReturn, Optional, Tuple, Type
-from discord.abc import Snowflake
+from typing import Any, Awaitable, Coroutine, List, Optional, Tuple, Type
 
+from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
-from discord.app_commands.errors import CommandSyncFailure
 
 log: Logger = logging.getLogger(__name__)
 
