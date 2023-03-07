@@ -30,18 +30,18 @@ class Database():
         # commit the changes
         self._connection.commit()
 
-    def select(self, type: Type[TStorable]) -> List[Row]:
+    def select(self, type: Type[TStorable]) -> List[TStorable]:
         # get the table instance
         table: Table = type.__table__()
         # execute the table's select statement and fetch all results
         results: List[Row] = self._connection.cursor().execute(table.__select__()).fetchall()
-        # return results
-        return results
+        # initialize each result from the static class method
+        return [type.__from_row__(row) for row in results]
 
-    def insert(self, type: TStorable) -> None:
+    def insert(self, type: Type[TStorable], item: TStorable) -> None:
         # get the table instance
         table: Table = type.__table__()
         # execute the table's insert statement with parameter injection
-        self._connection.cursor().execute(table.__insert__(), type.__values__())
+        self._connection.cursor().execute(table.__insert__(), item.__values__())
         # commit the changes
         self._connection.commit()
