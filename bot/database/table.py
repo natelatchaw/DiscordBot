@@ -74,11 +74,7 @@ class Table:
 
     def __insert__(self) -> str:
         """
-        Get the SQL statement responsible for deleting the table
-
-        Parameters:
-        - if_exists (bool):
-            if True, includes 'IF EXISTS' in the statement.
+        Get the SQL statement responsible for inserting the table
         """
         terms: List[str] = list()
         # add the create table command to the list of terms
