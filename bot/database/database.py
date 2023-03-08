@@ -9,7 +9,7 @@ from .table import Table
 
 class Database():
 
-    def __init__(self, reference: Path) -> None:
+    def __init__(self, reference: Path, detect_types=sqlite3.PARSE_DECLTYPES) -> None:
         # create an absolute reference to the database
         self._database: Path = reference.absolute()
         # if the parent directory does not exist, create it
@@ -18,7 +18,7 @@ class Database():
         if not self._database.exists(): self._database.touch(exist_ok=True)
 
         # connect to the database
-        self._connection: Connection = sqlite3.connect(self._database)
+        self._connection: Connection = sqlite3.connect(self._database, detect_types=detect_types)
         # set the connection's row factory
         self._connection.row_factory = Row
 
