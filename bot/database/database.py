@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 from sqlite3 import Connection, Row
-from typing import List, Type
+from typing import Iterable, List, Type
 
 from .storable import TStorable
 from .table import Table
@@ -30,7 +30,7 @@ class Database():
         # commit the changes
         self._connection.commit()
 
-    def select(self, type: Type[TStorable]) -> List[TStorable]:
+    def select(self, type: Type[TStorable]) -> Iterable[TStorable]:
         # get the table instance
         table: Table = type.__table__()
         # execute the table's select statement and fetch all results
