@@ -4,27 +4,28 @@ from pathlib import Path
 from typing import cast
 
 from ..configuration import Configuration
-from .logger import LoggerSettings
-from .data import DataSettings
-from .token import TokenSettings
+from .logger import LoggerSection
+from .data import DataSection
+from .token import TokenSection
 
 log: Logger = logging.getLogger(__name__)
 
-class ClientSettings(Configuration):
-    def __init__(self, reference: Path = Path('./config.ini')) -> None:
+class ClientConfiguration(Configuration):
+    def __init__(self, reference: Path) -> None:
         super().__init__(reference)
-        self['TOKENS'] = TokenSettings('TOKENS', self._parser, self._reference)
-        self['DATA'] = DataSettings('DATA', self._parser, self._reference)
-        self['LOGGING'] = LoggerSettings('LOGGING', self._parser, self._reference)
+        
+        self['TOKENS'] = TokenSection(self._reference, self._parser)
+        self['DATA'] = DataSection(self._reference, self._parser)
+        self['LOGGING'] = LoggerSection(self._reference, self._parser)
 
     @property
-    def token(self) -> TokenSettings:
-        return cast(TokenSettings, self['TOKENS'])
+    def token(self) -> TokenSection:
+        return cast(TokenSection, self['TOKENS'])
 
     @property
-    def data(self) -> DataSettings:
-        return cast(DataSettings, self['DATA'])
+    def data(self) -> DataSection:
+        return cast(DataSection, self['DATA'])
 
     @property
-    def logger(self) -> LoggerSettings:
-        return cast(LoggerSettings, self['LOGGING'])
+    def logger(self) -> LoggerSection:
+        return cast(LoggerSection, self['LOGGING'])

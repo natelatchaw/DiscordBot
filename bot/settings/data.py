@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 import logging
 from logging import Logger
 from pathlib import Path
@@ -7,7 +8,10 @@ from .section import SettingsSection
 
 log: Logger = logging.getLogger(__name__)
 
-class DataSettings(SettingsSection):
+class DataSection(SettingsSection):
+
+    def __init__(self, reference: Path, parser: ConfigParser = ...) -> None:
+        super().__init__('DATA', reference, parser)
     
     @property
     def permissions(self) -> int:

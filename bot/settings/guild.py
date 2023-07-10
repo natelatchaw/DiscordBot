@@ -6,22 +6,23 @@ from typing import cast
 from discord import Guild
 
 from ..configuration import Configuration
-from .limiting import LimiterSettings
-from .ux import UXSettings
+from .limiting import LimiterSection
+from .ux import UXSection
 
 log: Logger = logging.getLogger(__name__)
 
 
-class GuildSettings(Configuration):
+class GuildConfiguration(Configuration):
     def __init__(self, directory: Path, guild: Guild):
-        super().__init__(directory.joinpath(str(guild.id) + '.ini'))
-        self['UX'] = UXSettings('UX', self._parser, self._reference)
-        self['LIMITING'] = LimiterSettings('LIMITING', self._parser, self._reference)
+        reference: Path = directory.joinpath(str(guild.id) + '.ini')
+        super().__init__(reference)
+        self['UX'] = UXSection(self._reference, self._parser)
+        self['LIMITING'] = LimiterSection(self._reference, self._parser)
 
     @property
-    def ux(self) -> UXSettings:
-        return cast(UXSettings, self['UX'])
+    def ux(self) -> UXSection:
+        return cast(UXSection, self['UX'])
 
     @property
-    def limiting(self) -> LimiterSettings:
-        return cast(LimiterSettings, self['LIMITING'])
+    def limiting(self) -> LimiterSection:
+        return cast(LimiterSection, self['LIMITING'])

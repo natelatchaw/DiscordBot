@@ -1,5 +1,7 @@
+from configparser import ConfigParser
 import logging
 from logging import Logger
+from pathlib import Path
 from typing import Optional
 
 from .section import SettingsSection
@@ -7,23 +9,26 @@ from .section import SettingsSection
 log: Logger = logging.getLogger(__name__)
 
 
-class UXSettings(SettingsSection):
+class UXSection(SettingsSection):
+
+    def __init__(self, reference: Path, parser: ConfigParser = ...) -> None:
+        super().__init__('UX', reference, parser)
 
     @property
     def prefix(self) -> Optional[str]:
-        key: str = "prefix"
+        key: str = 'prefix'
         return self.get_string(key)
     @prefix.setter
     def prefix(self, value: str) -> None:
-        key: str = "prefix"
+        key: str = 'prefix'
         self[key] = value
 
     @property
     def verbose(self) -> bool:
-        key: str = "verbose"
+        key: str = 'verbose'
         value: Optional[bool] = self.get_boolean(key)
         return value if value else False
     @verbose.setter
     def verbose(self, value: bool) -> None:
-        key: str = "verbose"
+        key: str = 'verbose'
         self[key] = str(value)

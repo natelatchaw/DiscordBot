@@ -3,22 +3,19 @@ from pathlib import Path
 from sqlite3 import Connection, Row
 from typing import Iterable, List, Type
 
+from ..file import File
+
 from .storable import TStorable
 from .table import Table
 
-
-class Database():
+class Database(File):
 
     def __init__(self, reference: Path, detect_types=sqlite3.PARSE_DECLTYPES) -> None:
-        # create an absolute reference to the database
-        self._database: Path = reference.absolute()
-        # if the parent directory does not exist, create it
-        if not self._database.parent.exists(): self._database.parent.mkdir(parents=True, exist_ok=True)
-        # if the database file does not exist, create it
-        if not self._database.exists(): self._database.touch(exist_ok=True)
+        # call parent initializer
+        super().__init__(reference)
 
         # connect to the database
-        self._connection: Connection = sqlite3.connect(self._database, detect_types=detect_types)
+        self._connection: Connection = sqlite3.connect(self._reference, detect_types=detect_types)
         # set the connection's row factory
         self._connection.row_factory = Row
 

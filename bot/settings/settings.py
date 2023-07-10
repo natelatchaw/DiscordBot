@@ -5,34 +5,33 @@ from typing import Callable, Optional
 
 from discord import Guild
 
-from .client import ClientSettings
-from .guild import GuildSettings
+from .client import ClientConfiguration
+from .guild import GuildConfiguration
 
 log: Logger = logging.getLogger(__name__)
 
+DEFAULT_DIR: Path = Path('./config/')
+
 class Settings():
 
-    def __init__(self, directory: Path = Path('./config/'), setup_hook: Optional[Callable[[ClientSettings], None]] = None) -> None:
+    def __init__(self, directory: Path = DEFAULT_DIR, setup_hook: Optional[Callable[[ClientConfiguration], None]] = None) -> None:
         # resolve the provided directory
         self._directory: Path = directory.resolve()
-        # if the provided directory doesn't exist
-        if not self._directory.exists(): self._directory.mkdir(parents=True, exist_ok=True)
-
-        # resolve the file path
-        self._file: Path = self._directory.joinpath('client.ini').resolve()
-        # get whether the file exists pre-initialization
+        # create the file path
+        self._file: Path = self._directory.joinpath('client.ini')
+        # determine whether the file already exists
         preexisting: bool = self._file.exists()
-        # initialize client settings
-        self._client_settings: ClientSettings = ClientSettings(self._file)
 
+        # initialize client settings
+        self._client_settings: ClientConfiguration = ClientConfiguration(self._file)
         # if the file was not preexisting and setup hook was provided
         if not preexisting and setup_hook:
             # call setup hook
             setup_hook(self._client_settings)
 
     @property
-    def client(self) -> ClientSettings:
+    def client(self) -> ClientConfiguration:
         return self._client_settings
 
-    def for_guild(self, guild: Guild) -> GuildSettings:
-        return GuildSettings(self._directory, guild)
+    def for_guild(self, guild: Guild) -> GuildConfiguration:
+        return GuildConfiguration(self._directory, guild)
