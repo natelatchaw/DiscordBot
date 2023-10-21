@@ -139,7 +139,7 @@ audio = ["PyNaCl"]
 [tool.setuptools]
 # If there are data files included in your packages that need to be
 # installed, specify them here.
-package-data = { "bot": ["py.typed"] }
+package-data = { "bot" = ["py.typed"] }
 
 [build-system]
 # These are the assumed default build requirements from pip:
