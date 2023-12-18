@@ -3,7 +3,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from discord import Client, Intents
+from discord import Client, Intents, AutoShardedClient
 from discord.app_commands import CommandTree
 
 from bot.loader import Loader
@@ -12,7 +12,7 @@ from bot.settings import Settings
 log: Logger = logging.getLogger(__name__)
 
 
-class Core(Client):
+class Core(AutoShardedClient):
 
     @property
     def permissions(self) -> int:
