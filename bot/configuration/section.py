@@ -1,4 +1,5 @@
-from typing import Self
+from __future__ import annotations # TODO: Change to typing.Self when Python >= 3.11
+
 import logging
 from collections.abc import MutableMapping
 from configparser import ConfigParser, NoOptionError, NoSectionError, SectionProxy
@@ -12,7 +13,7 @@ log: Logger = logging.getLogger(__name__)
 class Section(SectionProxy, MutableMapping[str, str]):
 
     @classmethod
-    def convert(cls, section: SectionProxy, *, path: Path) -> Self:
+    def convert(cls, section: SectionProxy, *, path: Path) -> Section:
         return cls(section._parser, section.name, path=path)
     
     def __init__(self, parser: ConfigParser, name: str, *, path: Path) -> None:

@@ -2,10 +2,8 @@ import logging
 from logging import Logger
 from pathlib import Path
 
-from bot.configuration.configuration import Configuration
-
+from ..configuration import Configuration
 from ..disk import Folder
-
 from .client import ClientConfiguration
 
 log: Logger = logging.getLogger(__name__)
