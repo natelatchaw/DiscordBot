@@ -10,7 +10,8 @@ log: Logger = logging.getLogger(__name__)
 
 class DataSection(SettingsSection):
 
-    def __init__(self, reference: Path, parser: ConfigParser = ...) -> None:
+    def __init__(self, reference: Path, parser: ConfigParser = ..., *, prompt: bool = False) -> None:
+        self._prompt: bool = prompt
         super().__init__('DATA', reference, parser)
     
     @property
@@ -21,7 +22,8 @@ class DataSection(SettingsSection):
         Raises:
         - ValueError: If permissions integer is missing or invalid
         """
-        return self.get_integer('permissions')
+        prompt: Optional[str] = 'Provide an value for the permissions integer: ' if self._prompt else None
+        return self.get_integer('permissions', prompt=prompt)
     @permissions.setter
     def permissions(self, flag: int) -> None:
         """
@@ -37,7 +39,8 @@ class DataSection(SettingsSection):
         Raises:
         - ValueError: If components directory is missing or invalid
         """
-        return self.get_directory('components')
+        prompt: Optional[str] = 'Provide the location of the components folder: ' if self._prompt else None
+        return self.get_directory('components', prompt=prompt)
     @components.setter
     def components(self, reference: Path) -> None:
         """
@@ -53,7 +56,8 @@ class DataSection(SettingsSection):
         Raises:
         - ValueError: If command sync boolean is missing or invalid
         """
-        return self.get_boolean('sync_commands')
+        prompt: Optional[str] = 'Should the commands be synced with Discord? (y/n): ' if self._prompt else None
+        return self.get_boolean('sync_commands', prompt=prompt)
     @sync.setter
     def sync(self, value: bool) -> None:
         """

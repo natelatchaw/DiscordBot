@@ -11,12 +11,12 @@ from .token import TokenSection
 log: Logger = logging.getLogger(__name__)
 
 class ClientConfiguration(Configuration):
-    def __init__(self, reference: Path) -> None:
+    def __init__(self, reference: Path, *, prompt: bool = False) -> None:
         super().__init__(reference)
         
-        self['TOKENS'] = TokenSection(self._reference, self._parser)
-        self['DATA'] = DataSection(self._reference, self._parser)
-        self['LOGGING'] = LoggerSection(self._reference, self._parser)
+        self['TOKENS'] = TokenSection(self._reference, self._parser, prompt=prompt)
+        self['DATA'] = DataSection(self._reference, self._parser, prompt=prompt)
+        self['LOGGING'] = LoggerSection(self._reference, self._parser, prompt=prompt)
 
     @property
     def token(self) -> TokenSection:

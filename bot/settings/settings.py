@@ -23,7 +23,7 @@ class Settings():
         preexisting: bool = self._file.exists()
 
         # initialize client settings
-        self._client_settings: ClientConfiguration = ClientConfiguration(self._file)
+        self._client_settings: ClientConfiguration = ClientConfiguration(self._file, prompt=not preexisting)
         # if the file was not preexisting and setup hook was provided
         if not preexisting and setup_hook:
             # call setup hook

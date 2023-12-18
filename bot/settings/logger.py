@@ -2,6 +2,7 @@ from configparser import ConfigParser
 import logging
 from logging import Logger
 from pathlib import Path
+from typing import Optional
 
 from .section import SettingsSection
 
@@ -9,7 +10,8 @@ log: Logger = logging.getLogger(__name__)
 
 class LoggerSection(SettingsSection):
 
-    def __init__(self, reference: Path, parser: ConfigParser = ...) -> None:
+    def __init__(self, reference: Path, parser: ConfigParser = ..., *, prompt: bool = False) -> None:
+        self._prompt: bool = prompt
         super().__init__('LOGGING', reference, parser)
     
     @property
@@ -21,8 +23,8 @@ class LoggerSection(SettingsSection):
         Raises:
         - ValueError: If logging config file path is invalid or inaccessible
         """
-
-        return self.get_file('logging.ini')
+        prompt: Optional[str] = 'Provide the location of the logging configuration file: ' if self._prompt else None
+        return self.get_file('logging.ini', prompt=prompt)
     
 
     @config.setter

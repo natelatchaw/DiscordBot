@@ -9,7 +9,7 @@ log: Logger = logging.getLogger(__name__)
 
 class SettingsSection(Section):
 
-    def get_string(self, key: str) -> str:
+    def get_string(self, key: str, *, prompt: Optional[str] = None) -> str:
         """
         Gets a string value for a given key.
         If the key does not exist, it is created and given an empty value.
@@ -19,6 +19,9 @@ class SettingsSection(Section):
         """
 
         try:
+            # if a prompt is provided and the key does not hava a value
+            if prompt and not self.get(key, None):
+                self[key] = input(prompt)
             value: str = self[key]
             if not value: raise KeyError()
             return str(value)
@@ -35,7 +38,7 @@ class SettingsSection(Section):
         self[key] = str(value)
 
 
-    def get_boolean(self, key: str) -> bool:
+    def get_boolean(self, key: str, *, prompt: Optional[str] = None) -> bool:
         """
         Gets an boolean value for a given key.
         If the key does not exist, it is created and given an empty value.
@@ -47,7 +50,7 @@ class SettingsSection(Section):
         positives: List[str] = ['1', 'true', 'yes', 'y']
         negatives: List[str] = ['0', 'false', 'no', 'n']
         
-        raw_value: str = self.get_string(key).lower()
+        raw_value: str = self.get_string(key, prompt=prompt).lower()
         if raw_value in positives: return True
         if raw_value in negatives: return False
         raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value')
@@ -61,7 +64,7 @@ class SettingsSection(Section):
         self.set_string(key, value)
 
 
-    def get_integer(self, key: str) -> int:
+    def get_integer(self, key: str, *, prompt: Optional[str] = None) -> int:
         """
         Gets an integer value for a given key.
         If the key does not exist, it is created and given an empty value.
@@ -71,7 +74,7 @@ class SettingsSection(Section):
         or cannot be parsed to an integer
         """
 
-        value: str = self.get_string(key)
+        value: str = self.get_string(key, prompt=prompt)
         try:
             return int(value)
         except ValueError as error:
@@ -110,7 +113,7 @@ class SettingsSection(Section):
         self.set_string(key, value)
 
 
-    def get_directory(self, key: str) -> Path:
+    def get_directory(self, key: str, *, prompt: Optional[str] = None) -> Path:
         """
         Gets a Path value for a given key.
 
@@ -118,7 +121,7 @@ class SettingsSection(Section):
         - ValueError: If the provided key's Path value is invalid or inaccessible
         """
         
-        value: str = self.get_string(key)
+        value: str = self.get_string(key, prompt=prompt)
         try:
             return self.__create_directory__(Path(value))
         except OSError as error:   
@@ -133,7 +136,7 @@ class SettingsSection(Section):
         self.set_string(key, value)
 
 
-    def get_file(self, key: str) -> Path:
+    def get_file(self, key: str, *, prompt: Optional[str] = None) -> Path:
         """
         Gets a Path value for a given key.
 
@@ -141,7 +144,7 @@ class SettingsSection(Section):
         - ValueError: If the provided key's Path value is invalid or inaccessible
         """
         
-        raw_value: str = self.get_string(key)
+        raw_value: str = self.get_string(key, prompt=prompt)
         try:
             return self.__create_file__(Path(raw_value))
         except OSError as error:
