@@ -12,20 +12,20 @@ from bot.settings import Settings
 log: Logger = logging.getLogger(__name__)
 
 
-class Core(AutoShardedClient):
+class Core(Client):
 
     @property
     def permissions(self) -> int:
         permissions: Optional[int] = self._settings.client.data.permissions
         if permissions is None:
-            raise ValueError(f'{self._settings.client.data._reference}: No permissions value provided.')
+            raise ValueError(f'{self._settings.client.data._path}: No permissions value provided.')
         return permissions
 
     @property
     def token(self) -> str:
         token: Optional[str] = self._settings.client.token.value
         if not token:
-            raise ValueError(f'{self._settings.client.token._reference}: No token value provided.')
+            raise ValueError(f'{self._settings.client.token._path}: No token value provided.')
         return token
 
     @property
@@ -56,16 +56,12 @@ class Core(AutoShardedClient):
         sync: bool = self._settings.client.data.sync if self._settings.client.data.sync is not None else True
 
         # initialize the command loader
-        self._loader: Loader = Loader(CommandTree(self))
+        self._loader: Loader = Loader(CommandTree(self), settings=self._settings)
 
         # initialize args to be passed to the command loader
-        args: List[Any] = [
-
-        ]
+        args: List[Any] = [ ]
         # initialize kwargs to be passed to the command loader
-        kwargs: Dict[str, Any] = {
-            'settings': self._settings
-        }
+        kwargs: Dict[str, Any] = { }
         log.info('Loading application commands')
         # load components from the directory
         await self._loader.load(self.components, loop=self.loop, *args, **kwargs)

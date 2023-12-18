@@ -1,37 +1,49 @@
 import logging
 from logging import Logger
 from pathlib import Path
-from typing import Callable, Optional
 
-from discord import Guild
+from bot.configuration.configuration import Configuration
+
+from ..disk import Folder
 
 from .client import ClientConfiguration
-from .guild import GuildConfiguration
 
 log: Logger = logging.getLogger(__name__)
 
-DEFAULT_DIR: Path = Path('./config/')
+DEFAULT_DIRECTORY: Path = Path('./config/')
+DEFAULT_FILENAME: str = 'client.ini'
 
-class Settings():
+class Settings(Folder):
+    """
+    A container responsible for creating and maintaining references to various
+    `Configuration` instances.
+    
+    It is represented on disk as a directory.
+    """
 
-    def __init__(self, directory: Path = DEFAULT_DIR, setup_hook: Optional[Callable[[ClientConfiguration], None]] = None) -> None:
-        # resolve the provided directory
-        self._directory: Path = directory.resolve()
-        # create the file path
-        self._file: Path = self._directory.joinpath('client.ini')
-        # determine whether the file already exists
-        preexisting: bool = self._file.exists()
+    def __init__(self, path: Path, *, exist_ok: bool = True) -> None:
+        """
+        Initializes a `Settings` container.
 
-        # initialize client settings
-        self._client_settings: ClientConfiguration = ClientConfiguration(self._file, prompt=not preexisting)
-        # if the file was not preexisting and setup hook was provided
-        if not preexisting and setup_hook:
-            # call setup hook
-            setup_hook(self._client_settings)
+        Args:
+            path: A reference to a directory on disk to be used for storing configuration data.
+            exist_ok: Whether the provided directory should be created on disk if it does not exist.
+        """
+
+        # initialize the parent Folder class
+        super().__init__(path, exist_ok=exist_ok)
 
     @property
     def client(self) -> ClientConfiguration:
-        return self._client_settings
-
-    def for_guild(self, guild: Guild) -> GuildConfiguration:
-        return GuildConfiguration(self._directory, guild)
+        # create a path to the configuration file
+        path: Path = self._path.joinpath(DEFAULT_FILENAME)
+        # return the configuration instance
+        return ClientConfiguration(path)
+    
+    @property
+    def application(self) -> Configuration:
+        # create a path to the configuration file
+        path: Path = self._path.joinpath('application.ini')
+        # return the configuration instance
+        return Configuration(path, exist_ok=True)
+    

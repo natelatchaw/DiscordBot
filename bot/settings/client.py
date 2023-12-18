@@ -8,24 +8,25 @@ from .logger import LoggerSection
 from .data import DataSection
 from .token import TokenSection
 
+
 log: Logger = logging.getLogger(__name__)
 
 class ClientConfiguration(Configuration):
-    def __init__(self, reference: Path, *, prompt: bool = False) -> None:
-        super().__init__(reference)
-        
-        self['TOKENS'] = TokenSection(self._reference, self._parser, prompt=prompt)
-        self['DATA'] = DataSection(self._reference, self._parser, prompt=prompt)
-        self['LOGGING'] = LoggerSection(self._reference, self._parser, prompt=prompt)
+    def __init__(self, path: Path, *, prompt: bool = False) -> None:
+        """
+        Args:
+            source: A path referencing the configuration file to utilize.
+        """
+        super().__init__(path, exist_ok=True)
 
     @property
     def token(self) -> TokenSection:
-        return cast(TokenSection, self['TOKENS'])
+        return TokenSection(self, path=self._path)
 
     @property
     def data(self) -> DataSection:
-        return cast(DataSection, self['DATA'])
+        return DataSection(self, path=self._path)
 
     @property
     def logger(self) -> LoggerSection:
-        return cast(LoggerSection, self['LOGGING'])
+        return LoggerSection(self, path=self._path)

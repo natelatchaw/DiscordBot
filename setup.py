@@ -28,10 +28,6 @@ setup(
         ],
     },
     url='not available',
-    install_requires=[
-        'discord.py',
-        'PyNaCl',
-    ],
     classifiers=[
         'Development Status :: Alpha',
         'Intended Audience :: Hobbyist',

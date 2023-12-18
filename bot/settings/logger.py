@@ -10,9 +10,12 @@ log: Logger = logging.getLogger(__name__)
 
 class LoggerSection(SettingsSection):
 
-    def __init__(self, reference: Path, parser: ConfigParser = ..., *, prompt: bool = False) -> None:
-        self._prompt: bool = prompt
-        super().__init__('LOGGING', reference, parser)
+    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+        """
+        """
+
+        super().__init__(parser, 'LOGGING', path=path)
+        self._prompt: bool = False
     
     @property
     def config(self) -> Path:

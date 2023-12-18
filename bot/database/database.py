@@ -3,7 +3,7 @@ from pathlib import Path
 from sqlite3 import Connection, Row
 from typing import Iterable, List, Type
 
-from ..file import File
+from ..disk import File
 
 from .storable import TStorable
 from .table import Table
@@ -15,7 +15,7 @@ class Database(File):
         super().__init__(reference)
 
         # connect to the database
-        self._connection: Connection = sqlite3.connect(self._reference, detect_types=detect_types)
+        self._connection: Connection = sqlite3.connect(self._path, detect_types=detect_types)
         # set the connection's row factory
         self._connection.row_factory = Row
 

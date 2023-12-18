@@ -47,12 +47,8 @@ def display_metadata(settings: Settings) -> None:
 
 
 try:
-    settings: Settings = Settings()
+    settings: Settings = Settings(Path('./config'))
     configure_logger(settings)
-except Exception as exception:
-    log.warning(exception)
-
-try:
     client: Core = Core(settings=settings)
     log.info('Bot started.')
     log.info('Using Python %s', platform.python_version())
@@ -61,7 +57,8 @@ except KeyboardInterrupt:
     log.info('Bot stopped.')
 except Exception as error:
     log.error(error)
-    #traceback.print_exception(error)
+    traceback.print_exception(error)
 finally:
+    log.error(error)
     input('Press enter to exit...')
     sys.exit()

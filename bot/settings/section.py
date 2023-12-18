@@ -27,7 +27,7 @@ class SettingsSection(Section):
             return str(value)
         except KeyError as error:
             self[key] = str()
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Missing value') from error
+            raise ValueError(f'{self._path}:{self._name}:{key}: Missing value') from error
 
 
     def set_string(self, key: str, value: Any) -> None:
@@ -53,7 +53,7 @@ class SettingsSection(Section):
         raw_value: str = self.get_string(key, prompt=prompt).lower()
         if raw_value in positives: return True
         if raw_value in negatives: return False
-        raise ValueError(f'{self._reference}:{self._name}:{key}: Invalid value')
+        raise ValueError(f'{self._path}:{self._name}:{key}: Invalid value')
 
 
     def set_boolean(self, key: str, value: bool) -> None:
@@ -78,7 +78,7 @@ class SettingsSection(Section):
         try:
             return int(value)
         except ValueError as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+            raise ValueError(f'{self._path}:{self._name}:{key}: {error}') from error
 
 
     def set_integer(self, key: str, value: int) -> None:
@@ -103,7 +103,7 @@ class SettingsSection(Section):
         try:
             return float(value)
         except ValueError as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+            raise ValueError(f'{self._path}:{self._name}:{key}: {error}') from error
         
 
     def set_float(self, key: str, value: float) -> None:
@@ -125,7 +125,7 @@ class SettingsSection(Section):
         try:
             return self.__create_directory__(Path(value))
         except OSError as error:   
-            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+            raise ValueError(f'{self._path}:{self._name}:{key}: {error}') from error
         
         
     def set_directory(self, key: str, value: Path) -> None:
@@ -148,7 +148,7 @@ class SettingsSection(Section):
         try:
             return self.__create_file__(Path(raw_value))
         except OSError as error:
-            raise ValueError(f'{self._reference}:{self._name}:{key}: {error}') from error
+            raise ValueError(f'{self._path}:{self._name}:{key}: {error}') from error
 
 
     def set_file(self, key: str, value: Path) -> None:

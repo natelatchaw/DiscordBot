@@ -10,9 +10,12 @@ log: Logger = logging.getLogger(__name__)
 
 class DataSection(SettingsSection):
 
-    def __init__(self, reference: Path, parser: ConfigParser = ..., *, prompt: bool = False) -> None:
-        self._prompt: bool = prompt
-        super().__init__('DATA', reference, parser)
+    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+        """
+        """
+        
+        super().__init__(parser, 'DATA', path=path)
+        self._prompt: bool = False
     
     @property
     def permissions(self) -> int:

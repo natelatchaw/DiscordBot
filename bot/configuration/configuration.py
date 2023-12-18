@@ -1,70 +1,89 @@
-import configparser
 import logging
-from collections.abc import MutableMapping
 from configparser import ConfigParser
 from logging import Logger
 from pathlib import Path
-from typing import Dict, Iterator, List, MutableMapping
+from typing import Iterator
 
-from ..file import File
+from ..disk import File
 from .section import Section
 
 log: Logger = logging.getLogger(__name__)
 
-class Configuration(File, MutableMapping[str, Section]):
+class Configuration(ConfigParser, File):
+    """
+    A container responsible for creating and maintaining references to various
+    `Section` instances.
 
-    def __init__(self, reference: Path) -> None:
-        super().__init__(reference)
-        self._parser: ConfigParser = configparser.ConfigParser()
-        log.debug('Determined target configuration file %s at %s', self.name, self.parent)
+    It is represented on disk as a configuration file.
+    """
+
+    def __init__(self, path: Path, *, exist_ok: bool = True) -> None:
+        """
+        Initializes a `Configuration` container.
+
+        Args:
+            path: A reference to a file on disk to be used for storing configuration data.
+            exist_ok: Whether the provided file should be created on disk if it does not exist.
+        """
+
+        # initialize the parent File class
+        File.__init__(self, path, exist_ok=exist_ok)
+        # initialize the parent ConfigParser class
+        ConfigParser.__init__(self)
 
         self.__read__()
-        log.debug('Completed initial configuration read for %s', self.name)
 
-        # create a list of sections from parser data
-        sections: List[Section] = [Section(section, self.path, self._parser) for section in self._parser.sections()]
-        # store each section by name in the dictionary
-        self._sections: Dict[str, Section] = {section.name: section for section in sections}
-        log.debug('Loaded %s sections for configuration file %s', len(self._sections), self.name)
+    def __setitem__(self, key: str, value: Section) -> None:
+        try:
+            self.__read__()
+            value: None = super().__setitem__(key, value)
+            self.__write__()
+            log.debug('SET %s:%s', self.name, key)
+            return value
+        except Exception:
+            raise
+
+    def __getitem__(self, key: str) -> Section:
+        try:
+            self.__read__()
+            value: Section = super().__getitem__(key)
+            self.__write__()
+            log.debug('GET %s:%s', self.name, key)
+            return Section.convert(value, path=self._path)
+        except KeyError:
+            new: Section = Section(self, key, path=self._path)
+            self.__setitem__(key, new)
+            self.__write__()
+            return self.__getitem__(key)
+            raise
+
+    def __delitem__(self, key: str) -> None:
+        try:
+            self.__read__()
+            value: None = super().__delitem__(key)
+            self.__write__()
+            log.debug('DEL %s:%s', self.name, key)
+            return value
+        except Exception:
+            raise
+
+    def __iter__(self) -> Iterator[str]:
+        return super().__iter__()
+
+    def __len__(self) -> int:
+        return super().__len__()
+
+    def __str__(self) -> str:
+        return super().__str__()
 
 
     def __write__(self) -> None:
+        """Saves data from memory to the underlying configuration file."""
         with open(self.path, 'w') as file:
-            self._parser.write(file)
+            super().write(file)
         log.debug('Wrote configuration state to %s', self.name)
 
     def __read__(self) -> None:
-        self._parser.read(self.path)
+        """Loads data from the underlying configuration file to memory."""
+        super().read(self.path)
         log.debug('Read configuration state from %s', self.name)
-
-
-    def __setitem__(self, key: str, value: Section) -> None:
-        self.__read__()
-        self._sections.__setitem__(key, value)
-        self.__write__()
-        log.debug('Set entry %s:%s', self.name, key)
-        return
-
-    def __getitem__(self, key: str) -> Section:
-        self.__read__()
-        section: Section = self._sections.__getitem__(key) # may raise KeyError
-        log.debug('Get entry %s:%s', self.name, key)
-        return section
-
-    def __delitem__(self, key: str) -> None:
-        section: Section = self.__getitem__(key)
-        section.clear()
-        self._parser.remove_section(section.name)
-        self._sections.__delitem__(key)
-        self.__write__()
-        log.debug('Del entry %s:%s', self.name, key)
-        return
-
-    def __iter__(self) -> Iterator[str]:
-        return self._sections.__iter__()
-
-    def __len__(self) -> int:
-        return self._sections.__len__()
-
-    def __str__(self) -> str:
-        return self._sections.__str__()

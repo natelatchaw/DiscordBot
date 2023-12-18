@@ -1,76 +1,89 @@
+from typing import Self
 import logging
 from collections.abc import MutableMapping
-from configparser import ConfigParser, DuplicateSectionError, NoOptionError
+from configparser import ConfigParser, NoOptionError, NoSectionError, SectionProxy
 from logging import Logger
 from pathlib import Path
 from typing import Iterator
 
-from ..file import File
 
 log: Logger = logging.getLogger(__name__)
 
-class Section(File, MutableMapping[str, str]):
+class Section(SectionProxy, MutableMapping[str, str]):
 
-    @property
-    def name(self) -> str:
-        """The name of the configuration section."""
-        return self._name
+    @classmethod
+    def convert(cls, section: SectionProxy, *, path: Path) -> Self:
+        return cls(section._parser, section.name, path=path)
     
+    def __init__(self, parser: ConfigParser, name: str, *, path: Path) -> None:
+        """
+        Initializes a `Section` container.
 
-    def __init__(self, name: str, reference: Path, parser: ConfigParser) -> None:
-        super().__init__(reference)
-        self._parser: ConfigParser = parser
-        self._name: str = name
+        Args:
+            parser: A reference to the `Configuration` container's `ConfigParser`.
+            name: The name of the section.
+            path: A reference to a file on disk to be used for storing configuration data.
+        """
 
-        try:
-            self._parser.add_section(self._name)
-            log.debug('Created configuration section %s:%s', self.path.name, self.name)
-        except DuplicateSectionError:   # section already exists
-            log.debug('Located configuration section %s:%s', self.path.name, self.name)
-        except ValueError:              # name is 'DEFAULT'
-            raise
+        SectionProxy.__init__(self, parser, name)
+        if not self.parser.has_section(self.name):
+            self.parser.add_section(self.name)
 
-            
-    def __write__(self) -> None:
-        with open(self.path, 'w') as file:
-            self._parser.write(file)
-
-    def __read__(self) -> None:
-        self._parser.read(self.path)
-
+        # create a reference to the path of the configuration file
+        self._path: Path = path
 
     def __setitem__(self, key: str, value: str) -> None:
         try:
             self.__read__()
-            self._parser.set(self.name, key, value)
+            value: None = super().__setitem__(key, value)
             self.__write__()
-            log.debug('Set entry %s:%s:%s', self.path.name, self.name, key)
-        except:
+            log.debug('SET %s:%s:%s', self._path.name, self.name, key)
+            return value
+        except NoSectionError:
+            raise
+        except Exception:
             raise
 
     def __getitem__(self, key: str) -> str:
         try:
             self.__read__()
-            entry: str = self._parser.get(self._name, key)
-            log.debug('Get entry %s:%s:%s', self.path.name, self.name, key)
-            return entry
+            value: str = super().__getitem__(key)
+            self.__write__()
+            log.debug('GET %s:%s:%s', self._path.name, self.name, key)
+            return value
         except NoOptionError:
             raise KeyError(key)
 
     def __delitem__(self, key: str) -> None:
         try:
-            entry: str = self.__getitem__(key)
-            self._parser.remove_option(self.name, entry)
+            self.__read__()
+            value: None = super().__delitem__(key)
             self.__write__()
-            log.debug('Del entry %s:%s:%s', self.path.name, self.name, key)
-        except:
+            log.debug('DEL %s:%s:%s', self._path.name, self.name, key)
+            return value
+        except Exception:
             raise
 
     def __iter__(self) -> Iterator[str]:
-        return iter({key: value for key, value in self._parser.items(self.name)})
+        return super().__iter__()
 
     def __len__(self) -> int:
-        return len({key: value for key, value in self._parser.items(self.name)})
+        return super().__len__()
 
     def __str__(self) -> str:
-        return str({key: value for key, value in self._parser.items(self.name)})
+        return super().__str__()
+    
+            
+    def __write__(self) -> None:
+        """Saves data from memory to the underlying configuration file."""
+        # open the parent configuration file
+        with open(self._path, 'w') as file:
+            # write the contents of the parser to file
+            super().parser.write(file)
+        log.debug('Wrote configuration state to %s:%s', self._path.name, self.name)
+
+    def __read__(self) -> None:
+        """Loads data from the underlying configuration file to memory."""
+        # read the parent configuration file
+        super().parser.read(self._path)
+        log.debug('Read configuration state from %s:%s', self._path.name, self.name)

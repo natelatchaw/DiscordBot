@@ -10,9 +10,12 @@ log: Logger = logging.getLogger(__name__)
 
 class TokenSection(SettingsSection):
 
-    def __init__(self, reference: Path, parser: ConfigParser = ..., *, prompt: bool = False) -> None:
-        self._prompt: bool = prompt
-        super().__init__('TOKENS', reference, parser)
+    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+        """
+        """
+        
+        super().__init__(parser, 'TOKENS', path=path)
+        self._prompt: bool = False
 
     @property
     def token_name(self, key: str = 'token') -> str:
@@ -32,7 +35,7 @@ class TokenSection(SettingsSection):
         except KeyError as error:
             defaults[key] = str()
             self.__write__()
-            raise ValueError(f'{self._reference}:{self._name}:{key}: Missing token name') from error
+            raise ValueError(f'{self._path}:{self._name}:{key}: Missing token name') from error
     @token_name.setter
     def token_name(self, value: str, key: str = 'token') -> None:
         defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self._parser.defaults())

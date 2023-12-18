@@ -16,8 +16,8 @@ class GuildConfiguration(Configuration):
     def __init__(self, directory: Path, guild: Guild):
         reference: Path = directory.joinpath(str(guild.id) + '.ini')
         super().__init__(reference)
-        self['UX'] = UXSection(self._reference, self._parser)
-        self['LIMITING'] = LimiterSection(self._reference, self._parser)
+        self['UX'] = UXSection(self._path, self._parser)
+        self['LIMITING'] = LimiterSection(self._path, self._parser)
 
     @property
     def ux(self) -> UXSection:

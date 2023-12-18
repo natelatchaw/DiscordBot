@@ -7,10 +7,12 @@ from importlib.machinery import ModuleSpec
 from logging import Logger
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, Awaitable, Coroutine, List, Optional, Tuple, Type
+from typing import Any, Awaitable, Coroutine, List, MutableMapping, Optional, Tuple, Type
 
 from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
+
+from bot.settings.settings import Settings
 
 log: Logger = logging.getLogger(__name__)
 
@@ -26,10 +28,10 @@ TRUNCATOR: str = '…'
 
 class Loader():
 
-    def __init__(self, tree: CommandTree):
+    def __init__(self, tree: CommandTree, *, settings: Settings):
         #
         self._tree: CommandTree = tree
-
+        self._settings: Settings = settings
 
     async def load(self, directory: Path, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, *args: Any, **kwargs: Any):
         """
@@ -62,6 +64,8 @@ class Loader():
                 for class_object in class_objects:
                     # handle class initialization
                     try:
+                        # add reference to application-specific configuration section to the kwargs
+                        kwargs['config']: MutableMapping = self._settings.application[class_object.__name__]
                         # initialize the class object
                         instance: object = class_object(*args, **kwargs)
                         # call instance setup hooks
