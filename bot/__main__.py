@@ -59,6 +59,5 @@ except Exception as error:
     log.error(error)
     traceback.print_exception(error)
 finally:
-    log.error(error)
     input('Press enter to exit...')
     sys.exit()
