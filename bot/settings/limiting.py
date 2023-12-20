@@ -4,11 +4,11 @@ from logging import Logger
 from pathlib import Path
 from typing import Optional
 
-from .section import SettingsSection
+from .section import TypedAccess
 
 log: Logger = logging.getLogger(__name__)
 
-class LimiterSection(SettingsSection):
+class LimiterSection(TypedAccess):
 
     def __init__(self, reference: Path, parser: ConfigParser = ...) -> None:
         super().__init__("LIMITING", reference, parser)

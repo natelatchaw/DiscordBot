@@ -1,14 +1,15 @@
 import logging
-from logging import Logger
 from pathlib import Path
+
+import discord
 
 from ..configuration import Configuration
 from ..disk import Folder
 from .client import ClientConfiguration
 
-log: Logger = logging.getLogger(__name__)
 
-DEFAULT_DIRECTORY: Path = Path('./config/')
+log: logging.Logger = logging.getLogger(__name__)
+
 DEFAULT_FILENAME: str = 'client.ini'
 
 class Settings(Folder):
@@ -27,12 +28,15 @@ class Settings(Folder):
             path: A reference to a directory on disk to be used for storing configuration data.
             exist_ok: Whether the provided directory should be created on disk if it does not exist.
         """
-
         # initialize the parent Folder class
         super().__init__(path, exist_ok=exist_ok)
 
     @property
     def client(self) -> ClientConfiguration:
+        """
+        Retrieves a `Configuration` instance dedicated to
+        client configuration options.
+        """
         # create a path to the configuration file
         path: Path = self._path.joinpath(DEFAULT_FILENAME)
         # return the configuration instance
@@ -40,8 +44,22 @@ class Settings(Folder):
     
     @property
     def application(self) -> Configuration:
+        """
+        Retrieves a `Configuration` instance dedicated to
+        application configuration options.
+        """
         # create a path to the configuration file
         path: Path = self._path.joinpath('application.ini')
+        # return the configuration instance
+        return Configuration(path, exist_ok=True)
+    
+    def for_guild(self, guild: discord.Guild):
+        """
+        Retrieves a `Configuration` instance dedicated to
+        a specific guild's configuration options.
+        """
+        # create a path to the configuration file
+        path: Path = self._path.joinpath(f'{guild.id}.ini')
         # return the configuration instance
         return Configuration(path, exist_ok=True)
     

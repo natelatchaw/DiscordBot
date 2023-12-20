@@ -1,5 +1,4 @@
 import logging
-from logging import Logger
 from pathlib import Path
 from typing import cast
 
@@ -9,7 +8,7 @@ from ..configuration import Configuration
 from .limiting import LimiterSection
 from .ux import UXSection
 
-log: Logger = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class GuildConfiguration(Configuration):

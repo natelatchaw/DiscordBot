@@ -1,15 +1,14 @@
-from configparser import ConfigParser
 import logging
-from logging import Logger
+from configparser import ConfigParser
 from pathlib import Path
 from typing import Optional
 
-from .section import SettingsSection
+from .section import TypedAccess
 
-log: Logger = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
-class UXSection(SettingsSection):
+class UXSection(TypedAccess):
 
     def __init__(self, reference: Path, parser: ConfigParser = ...) -> None:
         super().__init__('UX', reference, parser)

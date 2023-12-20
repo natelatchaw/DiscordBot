@@ -1,10 +1,11 @@
 from typing import List
 
+from . import database
+
 from .core import Core
-from .loader import Loader
-from .configuration import Configuration
-from .database import Database, Table
 from .settings import Settings
+from .configuration import Configuration, Section
+from .protocol import Component
 
 """
 Bot
@@ -16,14 +17,14 @@ __version__ = '0.0.7'
 __author__ = 'Nathan Latchaw'
 
 __all__: List[str] = [
-    "Core",
+    "database",
+    "configuration",
 
-    "Loader",
+    "Core",
+    "Settings",
 
     "Configuration",
+    "Section",
 
-    "Database",
-    "Table",
-
-    "Settings",
+    "Component"
 ]

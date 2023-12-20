@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import Any, Dict, List
 
-class File():
+class File(object):
 
-    def __init__(self, path: Path, *, exist_ok: bool = True) -> None:
+    def __init__(self, path: Path, *args: List[Any], exist_ok: bool = True, **kwargs: Dict[str, Any]) -> None:
         """
         Initializes a representation of a file on disk.
 
@@ -14,6 +15,7 @@ class File():
         # create an absolute reference to the file
         self._path: Path = path.absolute().resolve()
         """A path referencing the file on disk."""
+        super().__init__(*args, **kwargs)
         
         # create the parent directory on disk (if it doesn't already exist)
         self._path.parent.mkdir(parents=True, exist_ok=exist_ok)
@@ -33,7 +35,7 @@ class File():
     
 class Folder():
 
-    def __init__(self, path: Path, *, exist_ok: bool = True) -> None:
+    def __init__(self, path: Path, *args: List[Any], exist_ok: bool = True, **kwargs: Dict[str, Any]) -> None:
         """
         Initializes a representation of a folder on disk.
 
@@ -45,6 +47,7 @@ class Folder():
         # create an absolute reference to the folder
         self._path: Path = path.absolute().resolve()
         """A path referencing the folder on disk."""
+        super().__init__(*args, **kwargs)
 
         # create the directory on disk (if it doesn't already exist)
         self._path.mkdir(parents=True, exist_ok=exist_ok)

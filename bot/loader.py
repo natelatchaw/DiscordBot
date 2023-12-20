@@ -4,7 +4,6 @@ import inspect
 import logging
 from asyncio import AbstractEventLoop
 from importlib.machinery import ModuleSpec
-from logging import Logger
 from pathlib import Path
 from types import MethodType, ModuleType
 from typing import Any, Awaitable, Coroutine, List, MutableMapping, Optional, Tuple, Type
@@ -12,9 +11,9 @@ from typing import Any, Awaitable, Coroutine, List, MutableMapping, Optional, Tu
 from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
 
-from bot.settings.settings import Settings
+from .settings import Settings
 
-log: Logger = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 MAX_DESCRIPTION_LENGTH: int = 100
 """The maximum string length accepted for a description"""

@@ -1,21 +1,21 @@
-from configparser import ConfigParser
 import logging
+from configparser import ConfigParser
 from logging import Logger
 from pathlib import Path
 from typing import Optional
 
-from .section import SettingsSection
+from ..configuration import Section
+from .section import TypedAccess
 
 log: Logger = logging.getLogger(__name__)
 
-class DataSection(SettingsSection):
+class DataSection(TypedAccess, Section):
 
     def __init__(self, parser: ConfigParser, *, path: Path) -> None:
         """
         """
         
         super().__init__(parser, 'DATA', path=path)
-        self._prompt: bool = False
     
     @property
     def permissions(self) -> int:
@@ -25,8 +25,7 @@ class DataSection(SettingsSection):
         Raises:
         - ValueError: If permissions integer is missing or invalid
         """
-        prompt: Optional[str] = 'Provide an value for the permissions integer: ' if self._prompt else None
-        return self.get_integer('permissions', prompt=prompt)
+        return self.get_integer('permissions')
     @permissions.setter
     def permissions(self, flag: int) -> None:
         """
@@ -42,8 +41,7 @@ class DataSection(SettingsSection):
         Raises:
         - ValueError: If components directory is missing or invalid
         """
-        prompt: Optional[str] = 'Provide the location of the components folder: ' if self._prompt else None
-        return self.get_directory('components', prompt=prompt)
+        return self.get_directory('components')
     @components.setter
     def components(self, reference: Path) -> None:
         """
@@ -59,8 +57,7 @@ class DataSection(SettingsSection):
         Raises:
         - ValueError: If command sync boolean is missing or invalid
         """
-        prompt: Optional[str] = 'Should the commands be synced with Discord? (y/n): ' if self._prompt else None
-        return self.get_boolean('sync_commands', prompt=prompt)
+        return self.get_boolean('sync_commands')
     @sync.setter
     def sync(self, value: bool) -> None:
         """

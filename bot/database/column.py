@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List
 
 
 class Column:
     """
-    An object containing metadata needed to construct a database table column
+    An object containing metadata needed to construct a database table column.
     """
 
     def __init__(self, name: str = '', type: str = '') -> None:
@@ -16,7 +16,7 @@ class Column:
 
     def __sql__(self) -> str:
         """
-        Returns a str containing the SQL
+        Returns a string containing the SQL statement.
         """
         terms: List[str] = list()
         # add the name to the list of terms if it exists
@@ -36,20 +36,20 @@ class ColumnBuilder():
     
     def __init__(self) -> None:
         """
-        Creates a new instance of the column builder, resetting internal state
+        Creates a new instance of the column builder, resetting internal state.
         """
         # reset the builder state
         self.__reset__()
 
     def __reset__(self) -> None:
         """
-        Resets the column builder's internal state
+        Resets the column builder's internal state.
         """
         self._column: Column = Column()
 
-    def column(self) -> Column:
+    def build(self) -> Column:
         """
-        Outputs the column being built and resets the builder's internal state
+        Outputs the column being built and resets the builder's internal state.
         """
         # get a copy of the Column instance
         column: Column = self._column
@@ -60,7 +60,7 @@ class ColumnBuilder():
 
     def setName(self, value: str) -> ColumnBuilder:
         """
-        Sets the name of the column being built
+        Sets the name of the column being built.
         """
         # set the column's _name property
         self._column._name = value
@@ -69,7 +69,7 @@ class ColumnBuilder():
 
     def isUnique(self, value: bool = True) -> ColumnBuilder:
         """
-        Sets whether or not the column being built should be marked as unique
+        Sets whether or not the column being built should be marked as unique.
         """
         # set the column's _is_unique property
         self._column._is_unique = value
@@ -78,7 +78,7 @@ class ColumnBuilder():
 
     def isPrimary(self, value: bool = True) -> ColumnBuilder:
         """
-        Sets whether or not the column being built should be marked as primary
+        Sets whether or not the column being built should be marked as primary.
         """
         # set the column's _is_primary property
         self._column._is_primary = value
@@ -88,8 +88,7 @@ class ColumnBuilder():
     def setType(self, value: str) -> ColumnBuilder:
         """
         Sets the declared column type of the column being built
-        \n
-        See: https://docs.python.org/3/library/sqlite3.html#sqlite-and-python-types
+        See https://docs.python.org/3/library/sqlite3.html#sqlite-and-python-types
         """
         # set the column's _type property
         self._column._type = value

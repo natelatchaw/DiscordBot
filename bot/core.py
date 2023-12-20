@@ -1,9 +1,9 @@
 import logging
 from logging import Logger
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-from discord import Client, Intents, AutoShardedClient
+from discord import Client, Intents
 from discord.app_commands import CommandTree
 
 from bot.loader import Loader
@@ -18,14 +18,14 @@ class Core(Client):
     def permissions(self) -> int:
         permissions: Optional[int] = self._settings.client.data.permissions
         if permissions is None:
-            raise ValueError(f'{self._settings.client.data._path}: No permissions value provided.')
+            raise ValueError(f'{self._settings.client.data.path}: No permissions value provided.')
         return permissions
 
     @property
     def token(self) -> str:
         token: Optional[str] = self._settings.client.token.value
         if not token:
-            raise ValueError(f'{self._settings.client.token._path}: No token value provided.')
+            raise ValueError(f'{self._settings.client.token.path}: No token value provided.')
         return token
 
     @property

@@ -1,40 +1,47 @@
-from configparser import ConfigParser
 import logging
-from logging import Logger
+from configparser import ConfigParser
 from pathlib import Path
-from typing import Optional
 
-from .section import SettingsSection
+from ..configuration import Section
+from .section import TypedAccess
 
-log: Logger = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
-class LoggerSection(SettingsSection):
+class LoggerSection(TypedAccess, Section):
+    """
+    A `Section` of a `Configuration` instance.
+    """
 
     def __init__(self, parser: ConfigParser, *, path: Path) -> None:
         """
+        Initializes a Logger `Configuration` section.
+
+        Args:
+            parser: A reference to the parent `Configuration` instance's parser.
+            path: A path referencing the configuration file to utilize.
         """
 
         super().__init__(parser, 'LOGGING', path=path)
-        self._prompt: bool = False
     
     @property
     def config(self) -> Path:
         """
-        Gets the path of the logging.ini file from configuration.
-        See: https://docs.python.org/3/library/logging.config.html#configuration-file-format
+        Gets the path of the logging configuration file from the current configuration file.
 
         Raises:
-        - ValueError: If logging config file path is invalid or inaccessible
+            ValueError: If logging configuration file path is missing, empty
+            or invalid/inaccessible
+
+        See: https://docs.python.org/3/library/logging.config.html#configuration-file-format
         """
-        prompt: Optional[str] = 'Provide the location of the logging configuration file: ' if self._prompt else None
-        return self.get_file('logging.ini', prompt=prompt)
-    
+        return self.get_file('config_ini')    
 
     @config.setter
     def config(self, reference: Path) -> None:
         """
-        Sets the path of the logging.ini file in configuration.
+        Sets the path of the logging configuration file in the current configuration file.
+
         See: https://docs.python.org/3/library/logging.config.html#configuration-file-format
         """
 
-        self.set_file('logging.ini', reference)
+        self.set_file('config_ini', reference)

@@ -27,9 +27,8 @@ class Table:
         """
         Get the SQL statement responsible for creating the table
 
-        Parameters:
-        - if_not_exists (bool):
-            if True, includes 'IF NOT EXISTS' in the statement.
+        Args:
+            if_not_exists: whether 'IF NOT EXISTS' should be included in the statement.
         """
         terms: List[str] = list()
         # add the create table command to the list of terms
@@ -100,9 +99,8 @@ class Table:
         """
         Get the SQL statement responsible for deleting the table
 
-        Parameters:
-        - if_exists (bool):
-            if True, includes 'IF EXISTS' in the statement.
+        Args:
+            if_exists: whether 'IF EXISTS' should be included in the statement.
         """
         terms: List[str] = list()
         # add the create table command to the list of terms
@@ -132,7 +130,7 @@ class TableBuilder():
         """
         self._table: Table = Table()
 
-    def table(self) -> Table:
+    def build(self) -> Table:
         """
         Outputs the table being built and resets the builder's internal state
         """

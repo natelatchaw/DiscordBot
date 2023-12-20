@@ -4,7 +4,6 @@ import platform
 import socket
 import sys
 from configparser import ParsingError
-from logging import Logger
 from logging.config import fileConfig
 from pathlib import Path
 import traceback
@@ -13,7 +12,7 @@ from typing import Optional
 from .core import Core
 from .settings import Settings
 
-log: Logger = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 async def main(client: Optional[Core] = None) -> None:
     try:

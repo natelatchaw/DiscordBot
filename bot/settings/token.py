@@ -1,21 +1,23 @@
-from configparser import ConfigParser
 import logging
-from logging import Logger
+from configparser import ConfigParser
 from pathlib import Path
-from typing import MutableMapping, Optional, cast
+from typing import Mapping, MutableMapping, Optional, cast
 
-from .section import SettingsSection
+from ..configuration import Section
+from .section import TypedAccess
 
-log: Logger = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
-class TokenSection(SettingsSection):
+class TokenSection(TypedAccess, Section):
 
     def __init__(self, parser: ConfigParser, *, path: Path) -> None:
         """
         """
         
         super().__init__(parser, 'TOKENS', path=path)
-        self._prompt: bool = False
+
+        # cast the defaults section to MutableMapping as it can be modified
+        self.defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self.parser.defaults())
 
     @property
     def token_name(self, key: str = 'token') -> str:
@@ -23,34 +25,26 @@ class TokenSection(SettingsSection):
         The name of the token to use.
         """
 
-        defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self._parser.defaults())
         try:
-            # Allow user input for creating the token name
-            if self._prompt and not defaults.get(key, None):
-                defaults[key] = input(f'Provide a name for your token: ')
-
-            value: str = defaults[key]
+            self.__read__()
+            value: str = self.defaults[key]
             if not value: raise KeyError()
             return str(value)
         except KeyError as error:
-            defaults[key] = str()
+            self.defaults[key] = str()
             self.__write__()
-            raise ValueError(f'{self._path}:{self._name}:{key}: Missing token name') from error
+            raise ValueError(f'{self._path}:{self.name}:{key}: Missing token name') from error
+        
     @token_name.setter
     def token_name(self, value: str, key: str = 'token') -> None:
-        defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self._parser.defaults())
-        defaults[key] = value
+        self.defaults[key] = value
+        self.__write__()
 
 
     @property
     def value(self) -> str:
-        """
-        The value of the token defined by the `name` property.
-        """
-        key: str = self.token_name
-        prompt: Optional[str] = f'Provide a value for the {key} token: ' if self._prompt else None
-        return self.get_string(key, prompt=prompt)
+        """The token defined by the `token_name` property."""
+        return self.get_string(self.token_name)
     @value.setter
     def value(self, token: str) -> None:
-        key: str = self.token_name
-        self.set_string(key, token)
+        self.set_string(self.token_name, token)
