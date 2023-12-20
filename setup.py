@@ -9,7 +9,6 @@ setup(
     license='Creative Commons',
     packages=[
         'bot',
-        'bot.configuration',
         'bot.database',
         'bot.settings',
     ],
