@@ -6,7 +6,7 @@ from asyncio import AbstractEventLoop
 from importlib.machinery import ModuleSpec
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, Awaitable, Coroutine, List, MutableMapping, Optional, Tuple, Type
+from typing import Any, Awaitable, Coroutine, Dict, List, MutableMapping, Optional, Tuple, Type
 
 from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
@@ -32,7 +32,7 @@ class Loader():
         self._tree: CommandTree = tree
         self._settings: Settings = settings
 
-    async def load(self, directory: Path, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, *args: Any, **kwargs: Any):
+    async def load(self, directory: Path, *args: List[Any], extension: str = 'py', loop: Optional[AbstractEventLoop] = None, **kwargs: Dict[str, Any]):
         """
         Load package files from a directory.
         Failed package assemblies are logged as warning messages.

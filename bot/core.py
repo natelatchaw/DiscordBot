@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional
 from discord import Client, Intents
 from discord.app_commands import CommandTree
 
-from bot.loader import Loader
-from bot.settings import Settings
+from .loader import Loader
+from .settings import Settings
 
 log: Logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class Core(Client):
 
 
     def __init__(self, settings: Optional[Settings] = None) -> None:
-        self._settings: Settings = settings if settings else Settings()
+        self._settings: Settings = settings if settings else Settings(Path('./config'))
         super().__init__(intents=Intents(self.permissions))
 
 
@@ -64,7 +64,7 @@ class Core(Client):
         kwargs: Dict[str, Any] = { }
         log.info('Loading application commands')
         # load components from the directory
-        await self._loader.load(self.components, loop=self.loop, *args, **kwargs)
+        await self._loader.load(self.components, *args, extension='py', loop=self.loop, **kwargs)
 
         if sync: log.info(f'Syncing application commands')
         # sync the loader's commands
