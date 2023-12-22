@@ -16,24 +16,15 @@ class Core(Client):
 
     @property
     def permissions(self) -> int:
-        permissions: Optional[int] = self._settings.client.data.permissions
-        if permissions is None:
-            raise ValueError(f'{self._settings.client.data.path}: No permissions value provided.')
-        return permissions
+        return self._settings.client.general.permissions
 
     @property
     def token(self) -> str:
-        token: Optional[str] = self._settings.client.token.value
-        if not token:
-            raise ValueError(f'{self._settings.client.token.path}: No token value provided.')
-        return token
+        return self._settings.client.token.value
 
     @property
-    def components(self) -> Path:
-        components: Optional[Path] = self._settings.client.data.components
-        if not components:
-            raise ValueError(f'{self._settings.client.data.components}: No components directory provided.')
-        return components
+    def directory(self) -> Path:
+        return self._settings.client.loader.directory
 
 
     def __init__(self, settings: Optional[Settings] = None) -> None:
@@ -53,7 +44,7 @@ class Core(Client):
         Calls necessary logic for loading application commands
         """
         # determine whether to sync application commands
-        sync: bool = self._settings.client.data.sync if self._settings.client.data.sync is not None else True
+        sync: bool = self._settings.client.loader.sync
 
         # initialize the command loader
         self._loader: Loader = Loader(CommandTree(self), settings=self._settings)
@@ -64,9 +55,10 @@ class Core(Client):
         kwargs: Dict[str, Any] = { }
         log.info('Loading application commands')
         # load components from the directory
-        await self._loader.load(self.components, *args, extension='py', loop=self.loop, **kwargs)
+        await self._loader.load(self.directory, extension='py', loop=self.loop, *args, **kwargs)
 
-        if sync: log.info(f'Syncing application commands')
-        # sync the loader's commands
-        if sync: await self._loader.sync(guild=None)
+        if sync:
+            log.info(f'Syncing application commands')
+            # sync the loader's commands
+            await self._loader.sync(guild=None)
 

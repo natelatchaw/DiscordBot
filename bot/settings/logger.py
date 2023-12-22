@@ -9,7 +9,8 @@ log: logging.Logger = logging.getLogger(__name__)
 
 class LoggerSection(TypedAccess, Section):
     """
-    A `Section` of a `Configuration` instance.
+    A `Section` of a `Configuration` instance containing values
+    related to the `Logger` system.
     """
 
     def __init__(self, parser: ConfigParser, *, path: Path) -> None:

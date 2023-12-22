@@ -9,6 +9,10 @@ from .section import TypedAccess
 log: logging.Logger = logging.getLogger(__name__)
 
 class TokenSection(TypedAccess, Section):
+    """
+    A `Section` of a `Configuration` instance containing values
+    related to the token authentication of the bot client.    
+    """
 
     def __init__(self, parser: ConfigParser, *, path: Path) -> None:
         """
@@ -43,8 +47,16 @@ class TokenSection(TypedAccess, Section):
 
     @property
     def value(self) -> str:
-        """The token defined by the `token_name` property."""
+        """
+        Gets the token defined by the `token_name` property
+        from configuration.
+
+        Raises:
+            ValueError: If token value is missing or invalid
+        """
+
         return self.get_string(self.token_name)
+    
     @value.setter
     def value(self, token: str) -> None:
         self.set_string(self.token_name, token)

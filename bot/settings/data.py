@@ -7,55 +7,42 @@ from typing import Optional
 from ..configuration import Section
 from .section import TypedAccess
 
-log: Logger = logging.getLogger(__name__)
+log: Logger = logging.getLogger(__name__)    
 
-class DataSection(TypedAccess, Section):
+class LoaderSection(TypedAccess, Section):
+    """
+    A `Section` of a `Configuration` instance containing values
+    related to the `Loader` system.
+    """
 
     def __init__(self, parser: ConfigParser, *, path: Path) -> None:
         """
-        """
-        
-        super().__init__(parser, 'DATA', path=path)
+        """        
+        super().__init__(parser, 'LOADER', path=path)
     
     @property
-    def permissions(self) -> int:
+    def directory(self) -> Path:
         """
-        Gets the permissions integer from configuration.
+        Gets the path of the directory from configuration.
 
         Raises:
-        - ValueError: If permissions integer is missing or invalid
+            ValueError: If directory is missing or invalid
         """
-        return self.get_integer('permissions')
-    @permissions.setter
-    def permissions(self, flag: int) -> None:
+        return self.get_directory('directory')
+    @directory.setter
+    def directory(self, reference: Path) -> None:
         """
-        Sets the permissions integer in configuration.
+        Sets the path of the directory in configuration.
         """
-        return self.set_integer('permissions', flag)
-    
-    @property
-    def components(self) -> Path:
-        """
-        Gets the path of the components directory from configuration.
-
-        Raises:
-        - ValueError: If components directory is missing or invalid
-        """
-        return self.get_directory('components')
-    @components.setter
-    def components(self, reference: Path) -> None:
-        """
-        Sets the path of the components directory in configuration.
-        """
-        return self.set_directory('components', reference)
+        return self.set_directory('directory', reference)
 
     @property
-    def sync(self) -> Optional[bool]:
+    def sync(self) -> bool:
         """
         Gets the command sync setting from configuration.
 
         Raises:
-        - ValueError: If command sync boolean is missing or invalid
+            ValueError: If command sync boolean is missing or invalid
         """
         return self.get_boolean('sync_commands')
     @sync.setter
@@ -64,19 +51,3 @@ class DataSection(TypedAccess, Section):
         Sets the command sync setting in configuration.
         """
         return self.set_boolean('sync_commands', value)
-
-    @property
-    def owner(self) -> int:
-        """
-        Gets the owner's ID from configuration.
-
-        Raises:
-        - ValueError: If owner ID is missing or invalid
-        """
-        return self.get_integer('owner')
-    @owner.setter
-    def owner(self, value: int) -> None:
-        """
-        Sets the owner's ID in configuration.
-        """
-        return self.set_integer('owner', value)
