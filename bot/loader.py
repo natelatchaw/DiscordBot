@@ -5,9 +5,8 @@ import logging
 from asyncio import AbstractEventLoop, Task
 from importlib.machinery import ModuleSpec
 from pathlib import Path
-import traceback
 from types import MethodType, ModuleType
-from typing import Any, Awaitable, Callable, Coroutine, Dict, List, MutableMapping, Optional, Tuple, Type, TypeVar, TypedDict, Unpack
+from typing import Any, Coroutine, List, MutableMapping, Optional, Tuple, Type, TypeVar, Unpack
 
 from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
@@ -116,7 +115,7 @@ class Loader():
             self._tree.add_command(command)
         except KeyboardInterrupt: raise
         except Exception as exception:
-            name: str = str(coroutine_object.__class__.__name__)
+            name: str = coroutine_object.__qualname__
             action: str = f'loading {coroutine_object.__name__}'
             log.warn(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
             return
@@ -284,74 +283,6 @@ class Loader():
         return docstring[:length] + TRUNCATOR if exceeds_max_length else docstring
     
     #endregion
-
-
-    async def d_get_coroutine_objects(self, instance: Any) -> List[MethodType]:
-        """
-        Retrieves all coroutine objects from a class instance.
-        """
-
-        # get all method members of the instance
-        members: List[Tuple[str, MethodType]] = inspect.getmembers(instance, inspect.iscoroutinefunction)
-        # filter members that start with a double underscore
-        members = [(member_name, member_object) for member_name, member_object, in members if not member_name.startswith('__')]
-        # return coroutine function objects
-        return [member_object for member_name, member_object in members]
-
-
-    async def __call_hooks__(self, instance: object, hooks: List[str], loop: Optional[AbstractEventLoop]) -> None:
-        """
-        Call specified coroutine hooks for the provided instance
-        """
-
-        # log setup start
-        log.info(f'Calling setup hooks for {instance.__class__.__name__}')
-        # get all coroutines in the instance
-        members: List[Tuple[str, MethodType]] = inspect.getmembers(instance, inspect.iscoroutinefunction)
-        # get all members with a name contained in the hook list
-        hook_coroutines: List[MethodType] = [member_object for member_name, member_object in members if member_name in hooks]
-        # define args
-        args: List[Any] = []
-        # define kwargs
-        kwargs: dict[str, Any] = { }
-
-        # call each hook
-        for hook_coroutine in hook_coroutines:
-            # wrap in try block to prevent hook coroutine from cancelling further hooks
-            try:
-                # if the event loop is available
-                if loop:
-                    # assemble source string
-                    source: str = '.'.join([instance.__class__.__name__, hook_coroutine.__name__])
-                    # wrap hook coroutine in exception handler
-                    awaitable: Coroutine[Any, Any, Any] = self._log_exceptions(hook_coroutine(*args, **kwargs), message=source)
-                    # call the hook via a created task
-                    _: asyncio.Task[Any] = loop.create_task(awaitable)
-                # if the event loop is not available
-                else:
-                    # call the hook and await the call
-                    await hook_coroutine(*args, **kwargs)
-            
-            # catch exceptions raised by hook
-            except Exception as error:
-                log.error(f'{instance.__class__.__name__}.{hook_coroutine.__name__}: {error}')
-
-
-    async def _is_eligible(self, class_object: Type[Any]) -> bool:
-        """
-        Returns a bool indicating whether a class object should be
-        considered eligible for import.
-        """
-
-        # if the class object does not conform to a Component, reject
-        if not isinstance(class_object, Component): return False
-        return True
-
-
-
-
-
-
 
 
 class HandlerError(Exception):
