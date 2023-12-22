@@ -9,8 +9,6 @@ from .disk import File
 
 log: logging.Logger = logging.getLogger(__name__)
 
-SectionType = TypeVar('SectionType', bound=SectionProxy)
-
 class Section(SectionProxy, MutableMapping[str, str]):
     
     def __init__(self, parser: ConfigParser, name: str, *, path: Path) -> None:
@@ -93,7 +91,7 @@ class Section(SectionProxy, MutableMapping[str, str]):
         return cls(section.parser, section.name, path=path)
 
 
-class Configuration(ConfigParser, File, Generic[SectionType]):
+class Configuration(ConfigParser, File):
     """
     A container responsible for creating and maintaining references to various
     `Section` instances.
@@ -117,7 +115,7 @@ class Configuration(ConfigParser, File, Generic[SectionType]):
 
         self.__read__()
 
-    def __setitem__(self, key: str, value: SectionType) -> None:
+    def __setitem__(self, key: str, value: Section) -> None:
         try:
             self.__read__()
             super().__setitem__(key, value)
@@ -126,15 +124,15 @@ class Configuration(ConfigParser, File, Generic[SectionType]):
         except Exception:
             raise
 
-    def __getitem__(self, key: str) -> SectionType:
+    def __getitem__(self, key: str) -> Section:
         try:
             self.__read__()
-            value: SectionType = super().__getitem__(key)
+            value: Section = super().__getitem__(key)
             self.__write__()
             log.debug('GET %s:%s', self.name, key)
             return Section.convert(value, path=self._path)
         except KeyError:
-            new: SectionType = Section(self, key, path=self._path)
+            new: Section = Section(self, key, path=self._path)
             super().__setitem__(key, new)
             self.__write__()
             return self.__getitem__(key)

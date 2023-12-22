@@ -141,6 +141,10 @@ audio = ["PyNaCl"]
 # installed, specify them here.
 package-data = { "bot" = ["py.typed"] }
 
+[tool.mypy]
+# Enable support for Unpack typing
+enable_incomplete_feature = ["Unpack"]
+
 [build-system]
 # These are the assumed default build requirements from pip:
 # https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
