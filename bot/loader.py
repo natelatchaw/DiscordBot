@@ -1,4 +1,3 @@
-import asyncio
 import importlib.util
 import inspect
 import logging
@@ -6,13 +5,14 @@ from asyncio import AbstractEventLoop, Task
 from importlib.machinery import ModuleSpec
 from pathlib import Path
 from types import MethodType, ModuleType
-from typing import Any, Coroutine, List, MutableMapping, Optional, Tuple, Type, TypeVar, Unpack
+from typing import Any, Coroutine, List, MutableMapping, Optional, Tuple, Type, TypeVar
 
 from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
 
-from .component import Component, Payload
+from .component import Component, KWARGTYPE
 from .settings import Settings
+
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class Loader():
         self._settings: Settings = settings
 
 
-    async def load(self, directory: Path, *args: Any, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, **kwargs: Unpack[Payload]) -> None:
+    async def load(self, directory: Path, *args: Any, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, **kwargs: KWARGTYPE) -> None:
         """
         Load package files from a directory.
         Failed package assemblies are logged as warning messages.
@@ -54,7 +54,7 @@ class Loader():
 
     #region level processing
 
-    async def _process_directory(self, directory: Path, *args: Any, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, **kwargs: Unpack[Payload]) -> None:
+    async def _process_directory(self, directory: Path, *args: Any, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, **kwargs: KWARGTYPE) -> None:
         try:
             # define the filename pattern to search for
             pattern: str = f'*.{extension}'
@@ -71,7 +71,7 @@ class Loader():
 
         for file_object in file_objects: await self._process_path(file_object, loop=loop, *args, **kwargs)
 
-    async def _process_path(self, file_object: Path, *args: Any, loop: Optional[AbstractEventLoop] = None, **kwargs: Unpack[Payload]) -> None:
+    async def _process_path(self, file_object: Path, *args: Any, loop: Optional[AbstractEventLoop] = None, **kwargs: KWARGTYPE) -> None:
         try:
             # get the module spec located at the reference
             spec: ModuleSpec = await self._get_module_spec(file_object)
@@ -90,7 +90,7 @@ class Loader():
         
         for class_object in class_objects: await self._process_class(class_object, loop=loop, *args, **kwargs)
 
-    async def _process_class(self, class_object: Type[Component], *args: Any, loop: Optional[AbstractEventLoop] = None, **kwargs: Unpack[Payload]) -> None:
+    async def _process_class(self, class_object: Type[Component], *args: Any, loop: Optional[AbstractEventLoop] = None, **kwargs: KWARGTYPE) -> None:
         try:
             # initialize the class object
             instance: Component = await self._get_instance(class_object, *args, **kwargs)
@@ -179,7 +179,7 @@ class Loader():
     
     #region class level methods
         
-    async def _get_instance(self, class_object: Type[Component], *args: Any, **kwargs: Unpack[Payload]) -> Component:
+    async def _get_instance(self, class_object: Type[Component], *args: Any, **kwargs: KWARGTYPE) -> Component:
         """
         Initializes the provided class object and returns the created instance.
         """

@@ -1,18 +1,26 @@
 from abc import abstractmethod
-from typing import Any, MutableMapping, Protocol, Required, TypedDict, Unpack, runtime_checkable
+import sys
+from typing import Any, MutableMapping, Protocol, TypedDict, runtime_checkable
+
+if sys.version_info < (3, 11):
+    KWARGTYPE = Any
+    Payload = Any
+else:
+    from typing import Unpack
+    KWARGTYPE = Unpack[Payload]
 
 
-class Payload(TypedDict, total=False):
-    """
-    A TypedDict of kwargs to be provided to the Component 
-    initializer.
-    """
+    class Payload(TypedDict, total=False):
+        """
+        A TypedDict of kwargs to be provided to the Component 
+        initializer.
+        """
 
-    config: Required[MutableMapping[str, Any]]
-    """
-    A dictionary-style configuration instance.
-    Values stored here will be stored across runs.
-    """
+        config: Required[MutableMapping[str, Any]]
+        """
+        A dictionary-style configuration instance.
+        Values stored here will be stored across runs.
+        """
 
 
 @runtime_checkable
@@ -22,7 +30,7 @@ class Component(Protocol):
     commands.
     """
 
-    def __init__(self, *args: Any, **kwargs: Unpack[Payload]):
+    def __init__(self, *args: Any, **kwargs: KWARGTYPE):
         raise NotImplementedError()
 
     @abstractmethod
