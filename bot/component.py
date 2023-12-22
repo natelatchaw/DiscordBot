@@ -1,15 +1,13 @@
 from abc import abstractmethod
 import sys
-from typing import Any, MutableMapping, Protocol, TypedDict, runtime_checkable
+from typing import Any, MutableMapping, Protocol, TypeAlias, TypedDict, runtime_checkable
 
 if sys.version_info < (3, 11):
-    KWARGTYPE = Any
+    KWARGTYPE: TypeAlias = Any
     Payload = Any
 else:
-    from typing import Unpack
-    KWARGTYPE = Unpack[Payload]
-
-
+    from typing import Unpack, Required
+    
     class Payload(TypedDict, total=False):
         """
         A TypedDict of kwargs to be provided to the Component 
@@ -21,6 +19,8 @@ else:
         A dictionary-style configuration instance.
         Values stored here will be stored across runs.
         """
+        
+    KWARGTYPE: TypeAlias = Unpack[Payload] # type: ignore
 
 
 @runtime_checkable
