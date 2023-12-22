@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, MutableMapping, Protocol, TypedDict, Unpack, runtime_checkable
+from typing import Any, MutableMapping, Protocol, Required, TypedDict, Unpack, runtime_checkable
 
 
 class Payload(TypedDict, total=False):
@@ -8,7 +8,7 @@ class Payload(TypedDict, total=False):
     initializer.
     """
 
-    config: MutableMapping[str, Any]
+    config: Required[MutableMapping[str, Any]]
     """
     A dictionary-style configuration instance.
     Values stored here will be stored across runs.
