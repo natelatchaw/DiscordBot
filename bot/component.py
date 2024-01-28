@@ -1,26 +1,21 @@
 from abc import abstractmethod
-import sys
-from typing import Any, MutableMapping, Protocol, TypeAlias, TypedDict, runtime_checkable
+from typing import Any, MutableMapping, Protocol, TypedDict, runtime_checkable
+from typing_extensions import TypeAlias, Unpack, Required
 
-if sys.version_info < (3, 11):
-    KWARGTYPE: TypeAlias = Any
-    Payload = Any
-else:
-    from typing import Unpack, Required
+
+class Payload(TypedDict, total=False):
+    """
+    A TypedDict of kwargs to be provided to the Component 
+    initializer.
+    """
+
+    config: Required[MutableMapping[str, Any]]
+    """
+    A dictionary-style configuration instance.
+    Values stored here will be stored across runs.
+    """
     
-    class Payload(TypedDict, total=False):
-        """
-        A TypedDict of kwargs to be provided to the Component 
-        initializer.
-        """
-
-        config: Required[MutableMapping[str, Any]]
-        """
-        A dictionary-style configuration instance.
-        Values stored here will be stored across runs.
-        """
-        
-    KWARGTYPE: TypeAlias = Unpack[Payload] # type: ignore
+KWARGTYPE: TypeAlias = Unpack[Payload] # type: ignore
 
 
 @runtime_checkable

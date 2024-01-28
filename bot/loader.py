@@ -4,8 +4,10 @@ import logging
 from asyncio import AbstractEventLoop, Task
 from importlib.machinery import ModuleSpec
 from pathlib import Path
+import sys
 from types import MethodType, ModuleType
 from typing import Any, Coroutine, List, MutableMapping, Optional, Tuple, Type, TypeVar
+from typing_extensions import TypeAlias
 
 from discord.abc import Snowflake
 from discord.app_commands import Command, CommandTree
@@ -15,6 +17,11 @@ from .settings import Settings
 
 
 log: logging.Logger = logging.getLogger(__name__)
+
+if sys.version_info < (3, 10):
+    ELLIPSIS_TYPE: TypeAlias = Any
+else:
+    ELLIPSIS_TYPE: TypeAlias = ...
 
 MAX_DESCRIPTION_LENGTH: int = 100
 """The maximum string length accepted for a description"""
@@ -110,7 +117,7 @@ class Loader():
     async def _process_coroutine(self, coroutine_object: MethodType) -> None:
         try:
             # get a command from the coroutine
-            command: Command[Any, ..., Any] = await self._get_command(coroutine_object)
+            command: Command[Any, ELLIPSIS_TYPE, Any] = await self._get_command(coroutine_object)
             # add the command to the command tree
             self._tree.add_command(command)
         except KeyboardInterrupt: raise
@@ -251,8 +258,8 @@ class Loader():
         
     
     #region coroutine level methods
-    
-    async def _get_command(self, coroutine: MethodType) -> Command[Any, ..., Any]:
+        
+    async def _get_command(self, coroutine: MethodType) -> Command[Any, ELLIPSIS_TYPE, Any]:
         """
         Register the provided coroutine as a command.
         """
