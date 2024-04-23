@@ -45,17 +45,25 @@ class Core(Client):
         """
         # determine whether to sync application commands
         sync: bool = self._settings.client.loader.sync
+        # determine whether to reset application commands
+        clear: bool = self._settings.client.loader.reset
 
         # initialize the command loader
         self._loader: Loader = Loader(CommandTree(self), settings=self._settings)
 
-        # initialize args to be passed to the command loader
-        args: List[Any] = [ ]
-        # initialize kwargs to be passed to the command loader
-        kwargs: Dict[str, Any] = { }
-        log.info('Loading application commands')
-        # load components from the directory
-        await self._loader.load(self.directory, extension='py', loop=self.loop, *args, **kwargs)
+        if clear:
+            log.info(f'Clearing application commands')
+            # clear the loader's commands
+            await self._loader.clear(guild=None)
+        
+        if True:
+            # initialize args to be passed to the command loader
+            args: List[Any] = [ ]
+            # initialize kwargs to be passed to the command loader
+            kwargs: Dict[str, Any] = { }
+            log.info('Loading application commands')
+            # load components from the directory
+            await self._loader.load(self.directory, extension='py', loop=self.loop, *args, **kwargs)
 
         if sync:
             log.info(f'Syncing application commands')

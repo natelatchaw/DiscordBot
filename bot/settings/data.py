@@ -51,3 +51,19 @@ class LoaderSection(TypedAccess, Section):
         Sets the command sync setting in configuration.
         """
         return self.set_boolean('sync_commands', value)
+
+    @property
+    def reset(self) -> bool:
+        """
+        Gets the command reset setting from configuration.
+
+        Raises:
+            ValueError: If command reset boolean is missing or invalid
+        """
+        return self.get_boolean('reset_commands')
+    @reset.setter
+    def reset(self, value: bool) -> None:
+        """
+        Sets the command reset setting in configuration.
+        """
+        return self.set_boolean('reset_commands', value)

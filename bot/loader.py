@@ -58,6 +58,14 @@ class Loader():
         # sync the command tree
         await self._tree.sync(guild=guild)
 
+    async def clear(self, *, guild: Optional[Snowflake] = None) -> None:
+        """
+        Clears the underlying commmand tree.
+        """
+
+        # clear the command tree
+        await self._tree.clear_commands(guild=guild)
+
 
     #region level processing
 
