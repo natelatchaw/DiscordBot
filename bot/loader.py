@@ -64,7 +64,7 @@ class Loader():
         """
 
         # clear the command tree
-        await self._tree.clear_commands(guild=guild)
+        self._tree.clear_commands(guild=guild)
 
 
     #region level processing
