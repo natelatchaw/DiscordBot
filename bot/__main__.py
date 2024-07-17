@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import logging
 import platform
@@ -13,6 +14,16 @@ from .core import Core
 from .settings import Settings
 
 log: logging.Logger = logging.getLogger(__name__)
+
+
+parser: argparse.ArgumentParser = argparse.ArgumentParser(prog="Discord Bot", description="A Discord Bot")
+parser.add_argument('--verbose', action='store_true')
+parser.add_argument('--setup', action='store_true')
+args: argparse.Namespace = parser.parse_args()
+
+use_verbose: bool = args.verbose if args.verbose else False
+launch_setup: bool = args.setup if args.setup else False
+
 
 async def main(client: Optional[Core] = None) -> None:
     try:
@@ -45,18 +56,26 @@ def display_metadata(settings: Settings) -> None:
     log.info(f'')
 
 
-try:
-    settings: Settings = Settings(Path('./config'))
-    configure_logger(settings)
-    client: Core = Core(settings=settings)
-    log.info('Bot started.')
-    log.info('Using Python %s', platform.python_version())
-    asyncio.run(main(client))
-except KeyboardInterrupt:
-    log.info('Bot stopped.')
-except Exception as error:
-    log.error(error)
-    traceback.print_exception(error)
-finally:
-    input('Press enter to exit...')
-    sys.exit()
+if __name__ == '__main__':
+    if launch_setup: 
+        settings: Settings = Settings(Path('./config'))
+        settings.__setup__()
+        sys.exit()
+
+    try:
+        settings: Settings = Settings(Path('./config'))
+        settings.__check__('--setup')
+        configure_logger(settings)
+        client: Core = Core(settings=settings)
+        log.info('Bot started.')
+        log.info('Using Python %s', platform.python_version())
+        asyncio.run(main(client))
+    except KeyboardInterrupt:
+        log.info('Bot stopped.')
+    except Exception as error:
+        log.error(error)
+        if use_verbose:
+            traceback.print_exception(error)
+    finally:
+        input('Press enter to exit...')
+        sys.exit()

@@ -20,6 +20,22 @@ class ClientConfiguration(Configuration):
         """
         super().__init__(path, exist_ok=True)
 
+    def __setup__(self):
+        """
+        Prompts the user for values to apply.
+        """
+        self.token.__setup__()
+        self.general.__setup__()
+        self.loader.__setup__()
+
+    def __check__(self):
+        """
+        Checks presence of required values.
+        """
+        self.token.__check__()
+        self.general.__check__()
+        self.loader.__check__()
+
     @property
     def token(self) -> TokenSection:
         """

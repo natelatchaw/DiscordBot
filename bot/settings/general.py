@@ -1,7 +1,11 @@
 from configparser import ConfigParser
+import logging
 from pathlib import Path
+from typing import Optional
 from ..configuration import Section
 from ..settings.section import TypedAccess
+
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class GeneralSection(TypedAccess, Section):
@@ -14,6 +18,30 @@ class GeneralSection(TypedAccess, Section):
         """
         """
         super().__init__(parser, 'GENERAL', path=path)
+
+    def __setup__(self) -> None:
+        """
+        Prompts the user for values to apply.
+        """
+
+        # Permissions setup
+        permissions: Optional[int] = None
+        while not permissions:
+            try:
+                permissions = self.permissions
+                print(f'Found existing permissions value: {self.permissions}')
+                break
+            except ValueError:
+                permissions_value: str = input('Provide a permissions integer (or leave empty for default): ')
+                permissions_value = permissions_value if permissions_value else '3276799'
+                permissions = int(permissions_value)
+        self.permissions = permissions
+
+    def __check__(self) -> None:
+        """
+        Checks presence of required values.
+        """
+        log.debug(f'Found existing permissions value: {self.permissions}')
     
     @property
     def permissions(self) -> int:

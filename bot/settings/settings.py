@@ -31,6 +31,21 @@ class Settings(Folder):
         # initialize the parent Folder class
         super().__init__(path, exist_ok=exist_ok)
 
+    def __setup__(self):
+        """
+        Prompts the user for values to apply to `Settings`.
+        """
+        self.client.__setup__()
+
+    def __check__(self, setup_flag: str):
+        """
+        Checks presence of required `Settings` values.
+        """
+        try:
+            self.client.__check__()
+        except Exception:
+            raise Exception(f"Configuration is missing required values. Run with {setup_flag} to provide these values.")
+
     @property
     def client(self) -> ClientConfiguration:
         """

@@ -19,6 +19,32 @@ class LoaderSection(TypedAccess, Section):
         """
         """        
         super().__init__(parser, 'LOADER', path=path)
+
+    def __setup__(self):
+        """
+        Prompts the user for values to apply.
+        """
+
+        # Directory setup
+        directory: Optional[Path] = None
+        while not directory:
+            try:
+                directory = self.directory
+                print(f'Found existing component directory: {self.directory}')
+                break
+            except ValueError:
+                directory_value: str = input('Provide a directory name for components: ')
+                try:
+                    directory = TypedAccess._create_directory(Path(directory_value))
+                except PermissionError as error:
+                    log.error(f'Invalid component directory provided: {error}')
+        self.directory = directory
+
+    def __check__(self) -> None:
+        """
+        Checks presence of required values.
+        """
+        log.debug(f'Found existing components directory: {self.directory}')
     
     @property
     def directory(self) -> Path:
@@ -44,7 +70,10 @@ class LoaderSection(TypedAccess, Section):
         Raises:
             ValueError: If command sync boolean is missing or invalid
         """
-        return self.get_boolean('sync_commands')
+        try:
+            return self.get_boolean('sync_commands')
+        except ValueError:
+            return True
     @sync.setter
     def sync(self, value: bool) -> None:
         """
@@ -60,7 +89,10 @@ class LoaderSection(TypedAccess, Section):
         Raises:
             ValueError: If command reset boolean is missing or invalid
         """
-        return self.get_boolean('reset_commands')
+        try:
+            return self.get_boolean('reset_commands')
+        except ValueError:
+            return False
     @reset.setter
     def reset(self, value: bool) -> None:
         """

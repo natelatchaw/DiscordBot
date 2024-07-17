@@ -23,6 +23,41 @@ class TokenSection(TypedAccess, Section):
         # cast the defaults section to MutableMapping as it can be modified
         self.defaults: MutableMapping[str, str] = cast(MutableMapping[str, str], self.parser.defaults())
 
+    def __setup__(self) -> None:
+        """
+        Prompts the user for values to apply.
+        """
+
+        # Token Name setup
+        token_name: Optional[str] = None
+        while not token_name or len(token_name) == 0:
+            try:
+                token_name = self.token_name
+                print(f'Found existing token name: {self.token_name}')
+                break
+            except ValueError:
+                token_name: str = input('Provide a nickname for your token: ')
+        self.token_name = token_name
+
+        # Token Value Setup
+        token_value: Optional[str] = None
+        while not token_value or len(token_value) == 0:
+            try:
+                token_value = self.value
+                print(f'Found existing token value: {self.value}')
+                break
+            except ValueError:
+                token_value: str = input('Provide your token: ')
+        self.value = token_value
+
+    def __check__(self) -> None:
+        """
+        Checks presence of required values.
+        """
+        log.debug(f'Found existing token name: {self.token_name}')
+        log.debug(f'Found existing token value: {self.value}')
+        
+
     @property
     def token_name(self, key: str = 'token') -> str:
         """
