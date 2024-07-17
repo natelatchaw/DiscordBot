@@ -10,6 +10,8 @@ from pathlib import Path
 import traceback
 from typing import Optional
 
+import discord
+
 from .core import Core
 from .settings import Settings
 
@@ -68,7 +70,8 @@ if __name__ == '__main__':
         configure_logger(settings)
         client: Core = Core(settings=settings)
         log.info('Bot started.')
-        log.info('Using Python %s', platform.python_version())
+        log.info('Using Python v%s', platform.python_version())
+        log.info('Using Discord.py v%s', discord.__version__)
         asyncio.run(main(client))
     except KeyboardInterrupt:
         log.info('Bot stopped.')
