@@ -101,7 +101,8 @@ classifiers = [  # Optional
 # For an analysis of this field vs pip's requirements files see:
 # https://packaging.python.org/discussions/install-requires-vs-requirements/
 dependencies = [ # Optional
-  "discord.py>=2.0.1"
+  "discord.py>=2.0.1",
+  "typing_extensions"
 ]
 
 # List additional groups of dependencies here (e.g. development
