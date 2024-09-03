@@ -79,6 +79,7 @@ class TokenSection(TypedAccess, Section):
             if not value: raise KeyError()
             return str(value)
         except KeyError as error:
+            if self.get_environment_variable(TOKEN_ENVIRONMENT_KEY): 'Using environment variable'
             self.defaults[key] = str()
             self.__write__()
             raise ValueError(f'{self._path}:{self.name}:{key}: Missing token name') from error
