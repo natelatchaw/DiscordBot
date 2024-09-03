@@ -1,5 +1,6 @@
 import logging
 from configparser import ConfigParser
+import os
 from pathlib import Path
 from typing import Mapping, MutableMapping, Optional, cast
 
@@ -8,6 +9,8 @@ from ..configuration import Section
 from .section import TypedAccess
 
 log: logging.Logger = logging.getLogger(__name__)
+
+TOKEN_ENVIRONMENT_KEY: str = 'DISCORD_TOKEN'
 
 class TokenSection(TypedAccess, Section):
     """
@@ -99,8 +102,12 @@ class TokenSection(TypedAccess, Section):
         # arguments override
         if self._arguments and self._arguments.token:
             return self._arguments.token
-
-        return self.get_string(self.token_name)
+        
+        try:
+            return self.get_string(self.token_name)
+        except:
+            # try to get the token value from the environment
+            return self.get_environment_variable(TOKEN_ENVIRONMENT_KEY)
     
     @value.setter
     def value(self, token: str) -> None:
