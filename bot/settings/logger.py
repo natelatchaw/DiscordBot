@@ -1,7 +1,9 @@
 import logging
 from configparser import ConfigParser
 from pathlib import Path
+from typing import Optional
 
+from ..arguments import Arguments
 from ..configuration import Section
 from .section import TypedAccess
 
@@ -13,7 +15,7 @@ class LoggerSection(TypedAccess, Section):
     related to the `Logger` system.
     """
 
-    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+    def __init__(self, parser: ConfigParser, *, path: Path, args: Optional[Arguments] = None) -> None:
         """
         Initializes a Logger `Configuration` section.
 
@@ -21,7 +23,7 @@ class LoggerSection(TypedAccess, Section):
             parser: A reference to the parent `Configuration` instance's parser.
             path: A path referencing the configuration file to utilize.
         """
-
+        self._arguments: Optional[Arguments] = args
         super().__init__(parser, 'LOGGING', path=path)
     
     @property
@@ -35,6 +37,10 @@ class LoggerSection(TypedAccess, Section):
 
         See: https://docs.python.org/3/library/logging.config.html#configuration-file-format
         """
+        # arguments override
+        if self._arguments and self._arguments.logging:
+            return self._arguments.logging
+        
         return self.get_file('config_ini')    
 
     @config.setter

@@ -27,7 +27,7 @@ class Core(Client):
         return self._settings.client.loader.directory
 
 
-    def __init__(self, settings: Optional[Settings] = None) -> None:
+    def __init__(self, *, directory: Optional[str] = None, settings: Optional[Settings] = None) -> None:
         self._settings: Settings = settings if settings else Settings(Path('./config'))
         super().__init__(intents=Intents(self.permissions))
 

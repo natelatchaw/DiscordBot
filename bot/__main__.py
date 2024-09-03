@@ -12,19 +12,15 @@ from typing import Optional
 
 import discord
 
+from .arguments import Arguments
+
 from .core import Core
 from .settings import Settings
 
 log: logging.Logger = logging.getLogger(__name__)
 
-
 parser: argparse.ArgumentParser = argparse.ArgumentParser(prog="Discord Bot", description="A Discord Bot")
-parser.add_argument('--verbose', action='store_true')
-parser.add_argument('--setup', action='store_true')
-args: argparse.Namespace = parser.parse_args()
-
-use_verbose: bool = args.verbose if args.verbose else False
-launch_setup: bool = args.setup if args.setup else False
+args: Arguments = Arguments(parser)
 
 
 async def main(client: Optional[Core] = None) -> None:
@@ -38,20 +34,20 @@ async def main(client: Optional[Core] = None) -> None:
         if client: await client.close()
 
 
-def configure_logger(settings: Settings, recurse: bool = True) -> None:
+def configure_logger(config: Path, recurse: bool = True) -> None:
     try:
-        fileConfig(settings.client.logger.config)
+        fileConfig(config)
     except ValueError as error:
         log.warning(error)
     except KeyError as error:
-        raise Exception(f'Invalid {settings.client.logger.config.name} configuration file: missing {error} key') from error
+        raise Exception(f'Invalid {config.name} configuration file: missing {error} key') from error
     except ParsingError as error:
-        raise Exception(f'Invalid {settings.client.logger.config.name} configuration file: {error.message}') from error
+        raise Exception(f'Invalid {config.name} configuration file: {error.message}') from error
     except FileNotFoundError as exception:
         directory: Path = Path(exception.filename)
         directory.parent.mkdir(parents=True)
         if not recurse: raise 
-        return configure_logger(settings=settings, recurse=False)
+        return configure_logger(config, recurse=False)
     
 def display_metadata(settings: Settings) -> None:
     log.info(f'{platform.system()} {platform.machine()} @ {socket.gethostbyname(socket.gethostname())}')
@@ -59,15 +55,16 @@ def display_metadata(settings: Settings) -> None:
 
 
 if __name__ == '__main__':
-    if launch_setup: 
-        settings: Settings = Settings(Path('./config'))
+    config_path: Path = Path('./config')
+    if args.launch_setup: 
+        settings: Settings = Settings(config_path, args=args)
         settings.__setup__()
         sys.exit()
 
     try:
-        settings: Settings = Settings(Path('./config'))
+        settings: Settings = Settings(config_path, args=args)
         settings.__check__('--setup')
-        configure_logger(settings)
+        configure_logger(settings.client.logger.config)
         client: Core = Core(settings=settings)
         log.info('Bot started.')
         log.info('Using Python v%s', platform.python_version())
@@ -77,7 +74,7 @@ if __name__ == '__main__':
         log.info('Bot stopped.')
     except Exception as error:
         log.error(error)
-        if use_verbose:
+        if args.use_verbose:
             traceback.print_exception(error)
     finally:
         input('Press enter to exit...')

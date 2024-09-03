@@ -1,6 +1,9 @@
+import argparse
 import logging
 from pathlib import Path
+from typing import Optional
 
+from ..arguments import Arguments
 from ..configuration import Configuration
 from .data import LoaderSection
 from .general import GeneralSection
@@ -13,11 +16,12 @@ class ClientConfiguration(Configuration):
     """
     """
     
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, args: Optional[Arguments] = None) -> None:
         """
         Args:
             path: A path referencing the configuration file to utilize.
         """
+        self._arguments: Optional[Arguments] = args
         super().__init__(path, exist_ok=True)
 
     def __setup__(self):
@@ -42,7 +46,7 @@ class ClientConfiguration(Configuration):
         A reference to the `Token` section in 
         configuration.
         """
-        return TokenSection(self, path=self._path)
+        return TokenSection(self, path=self._path, args=self._arguments)
     
     @property
     def general(self) -> GeneralSection:
@@ -50,7 +54,7 @@ class ClientConfiguration(Configuration):
         A reference to the `General` section in 
         configuration.
         """
-        return GeneralSection(self, path=self._path)
+        return GeneralSection(self, path=self._path, args=self._arguments)
 
     @property
     def loader(self) -> LoaderSection:
@@ -58,7 +62,7 @@ class ClientConfiguration(Configuration):
         A reference to the `Loader` section in 
         configuration.
         """
-        return LoaderSection(self, path=self._path)
+        return LoaderSection(self, path=self._path, args=self._arguments)
 
     @property
     def logger(self) -> LoggerSection:
@@ -66,4 +70,4 @@ class ClientConfiguration(Configuration):
         A reference to the `Logger` section in 
         configuration.
         """
-        return LoggerSection(self, path=self._path)
+        return LoggerSection(self, path=self._path, args=self._arguments)

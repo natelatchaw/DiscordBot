@@ -2,6 +2,7 @@ from configparser import ConfigParser
 import logging
 from pathlib import Path
 from typing import Optional
+from ..arguments import Arguments
 from ..configuration import Section
 from ..settings.section import TypedAccess
 
@@ -14,9 +15,10 @@ class GeneralSection(TypedAccess, Section):
     related to the general operation of the bot client.
     """
 
-    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+    def __init__(self, parser: ConfigParser, *, path: Path, args: Optional[Arguments] = None) -> None:
         """
         """
+        self._arguments: Optional[Arguments] = args
         super().__init__(parser, 'GENERAL', path=path)
 
     def __setup__(self) -> None:
@@ -51,6 +53,10 @@ class GeneralSection(TypedAccess, Section):
         Raises:
             ValueError: If permissions integer is missing or invalid
         """
+        # arguments override
+        if self._arguments and self._arguments.permissions:
+            return self._arguments.permissions
+
         return self.get_integer('permissions')
     @permissions.setter
     def permissions(self, flag: int) -> None:

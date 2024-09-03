@@ -3,6 +3,7 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Mapping, MutableMapping, Optional, cast
 
+from ..arguments import Arguments
 from ..configuration import Section
 from .section import TypedAccess
 
@@ -14,10 +15,11 @@ class TokenSection(TypedAccess, Section):
     related to the token authentication of the bot client.    
     """
 
-    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+    def __init__(self, parser: ConfigParser, *, path: Path, args: Optional[Arguments] = None) -> None:
         """
         """
         
+        self._arguments: Optional[Arguments] = args
         super().__init__(parser, 'TOKENS', path=path)
 
         # cast the defaults section to MutableMapping as it can be modified
@@ -64,6 +66,10 @@ class TokenSection(TypedAccess, Section):
         The name of the token to use.
         """
 
+        # arguments override
+        if self._arguments and self._arguments.token:
+            return "Provided via command-line arguments"
+
         try:
             self.__read__()
             value: str = self.defaults[key]
@@ -89,6 +95,10 @@ class TokenSection(TypedAccess, Section):
         Raises:
             ValueError: If token value is missing or invalid
         """
+
+        # arguments override
+        if self._arguments and self._arguments.token:
+            return self._arguments.token
 
         return self.get_string(self.token_name)
     

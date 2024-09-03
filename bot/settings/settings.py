@@ -1,8 +1,11 @@
+import argparse
 import logging
 from pathlib import Path
+from typing import Optional
 
 import discord
 
+from ..arguments import Arguments
 from ..configuration import Configuration
 from ..disk import Folder
 from .client import ClientConfiguration
@@ -20,7 +23,7 @@ class Settings(Folder):
     It is represented on disk as a directory.
     """
 
-    def __init__(self, path: Path, *, exist_ok: bool = True) -> None:
+    def __init__(self, path: Path, *, args: Optional[Arguments] = None, exist_ok: bool = True) -> None:
         """
         Initializes a `Settings` container.
 
@@ -28,6 +31,7 @@ class Settings(Folder):
             path: A reference to a directory on disk to be used for storing configuration data.
             exist_ok: Whether the provided directory should be created on disk if it does not exist.
         """
+        self._arguments: Optional[Arguments] = args
         # initialize the parent Folder class
         super().__init__(path, exist_ok=exist_ok)
 
@@ -55,7 +59,7 @@ class Settings(Folder):
         # create a path to the configuration file
         path: Path = self._path.joinpath(DEFAULT_FILENAME)
         # return the configuration instance
-        return ClientConfiguration(path)
+        return ClientConfiguration(path, args=self._arguments)
     
     @property
     def application(self) -> Configuration:

@@ -4,6 +4,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Optional
 
+from ..arguments import Arguments
 from ..configuration import Section
 from .section import TypedAccess
 
@@ -15,9 +16,10 @@ class LoaderSection(TypedAccess, Section):
     related to the `Loader` system.
     """
 
-    def __init__(self, parser: ConfigParser, *, path: Path) -> None:
+    def __init__(self, parser: ConfigParser, *, path: Path, args: Optional[Arguments] = None) -> None:
         """
-        """        
+        """
+        self._arguments: Optional[Arguments] = args      
         super().__init__(parser, 'LOADER', path=path)
 
     def __setup__(self):
@@ -54,6 +56,10 @@ class LoaderSection(TypedAccess, Section):
         Raises:
             ValueError: If directory is missing or invalid
         """
+        # arguments override
+        if self._arguments and self._arguments.directory:
+            return self._arguments.directory
+        
         return self.get_directory('directory')
     @directory.setter
     def directory(self, reference: Path) -> None:
