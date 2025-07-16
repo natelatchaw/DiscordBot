@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 from types import MethodType, ModuleType
 from typing import Any, Coroutine, List, MutableMapping, Optional, Tuple, Type, TypeVar
+import discord
 from typing_extensions import TypeAlias
 
 from discord.abc import Snowflake
@@ -37,10 +38,11 @@ ReturnType = TypeVar('ReturnType')
 
 class Loader():
 
-    def __init__(self, tree: CommandTree, *, settings: Settings):
+    def __init__(self, tree: CommandTree, *, settings: Settings, client: discord.Client):
         #
         self._tree: CommandTree = tree
         self._settings: Settings = settings
+        self._client: discord.Client = client
 
 
     async def load(self, directory: Path, *args: Any, extension: str = 'py', loop: Optional[AbstractEventLoop] = None, **kwargs: KWARGTYPE) -> None:
@@ -65,6 +67,18 @@ class Loader():
 
         # clear the command tree
         self._tree.clear_commands(guild=guild)
+
+    async def inject(self, class_object: Type[Component], kwargs: KWARGTYPE) -> None:
+        """
+        Injects data into the keyword argument dictionary to be passed to the class object being initialized.
+        """
+
+        # get the configuration section for the class object
+        configuration: MutableMapping = self._settings.application[class_object.__name__]
+        # add a configuration section reference to the initializer kwargs 
+        kwargs['config'] = configuration
+        kwargs['client'] = self._client
+    
 
 
     #region level processing
@@ -200,10 +214,7 @@ class Loader():
         """
 
         try:
-            # get the configuration section for the class object
-            configuration: MutableMapping = self._settings.application[class_object.__name__]
-            # add a configuration section reference to the initializer kwargs 
-            kwargs['config'] = configuration
+            await self.inject(class_object, kwargs)
 
             log.debug(f'{class_object.__name__}: Initializing instance')
             # initialize the class object

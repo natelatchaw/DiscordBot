@@ -49,7 +49,7 @@ class Core(Client):
         clear: bool = self._settings.client.loader.reset
 
         # initialize the command loader
-        self._loader: Loader = Loader(CommandTree(self), settings=self._settings)
+        self._loader: Loader = Loader(CommandTree(self), settings=self._settings, client=self)
 
         if clear:
             log.info(f'Clearing application commands')
