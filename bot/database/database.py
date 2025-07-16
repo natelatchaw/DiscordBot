@@ -32,10 +32,12 @@ class Database(File):
     def select(self, type: Type[TStorable], where: Optional[WhereClause] = None) -> Iterable[TStorable]:
         # get the table instance
         table: Table = type.__table__()
+        # initialize sql string
+        sql: str = table.__select__(where=where) if where else table.__select__()
         # initialize sql parameters if a clause was provided
         parameters: Tuple = (where._value, ) if where else ()
         # execute the table's select statement and fetch all results
-        results: List[Row] = self._connection.cursor().execute(table.__select__(), parameters).fetchall()
+        results: List[Row] = self._connection.cursor().execute(sql, parameters).fetchall()
         # initialize each result from the static class method
         return [type.__from_row__(row) for row in results]
 
