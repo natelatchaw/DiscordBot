@@ -5,6 +5,7 @@ from typing import Optional
 from ..arguments import Arguments
 from ..configuration import Section
 from ..settings.section import TypedAccess
+import discord
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -34,9 +35,9 @@ class GeneralSection(TypedAccess, Section):
                 print(f'Found existing permissions value: {self.permissions}')
                 break
             except ValueError:
-                permissions_value: str = input('Provide a permissions integer (or leave empty for default): ')
-                permissions_value = permissions_value if permissions_value else '3276799'
-                permissions = int(permissions_value)
+                default_value: int = discord.Permissions.DEFAULT_VALUE
+                permissions_value: str = input(f'Provide a permissions integer (or leave empty for default <{default_value}>): ')
+                permissions = int(permissions_value) if permissions_value else default_value
         self.permissions = permissions
 
     def __check__(self) -> None:
