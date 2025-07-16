@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
-from sqlite3 import _Parameters, Connection, Row
-from typing import Iterable, List, Optional, Type
+from sqlite3 import Connection, Row
+from typing import Iterable, List, Optional, Tuple, Type
 
 from .clauses import WhereClause
 
@@ -33,7 +33,7 @@ class Database(File):
         # get the table instance
         table: Table = type.__table__()
         # initialize sql parameters if a clause was provided
-        parameters: _Parameters = (where._value, ) if where else ()
+        parameters: Tuple = (where._value, ) if where else ()
         # execute the table's select statement and fetch all results
         results: List[Row] = self._connection.cursor().execute(table.__select__(), parameters).fetchall()
         # initialize each result from the static class method
