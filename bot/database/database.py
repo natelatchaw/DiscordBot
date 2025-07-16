@@ -29,7 +29,7 @@ class Database(File):
         # commit the changes
         self._connection.commit()
 
-    def select(self, type: Type[TStorable], where: Optional[WhereClause]) -> Iterable[TStorable]:
+    def select(self, type: Type[TStorable], where: Optional[WhereClause] = None) -> Iterable[TStorable]:
         # get the table instance
         table: Table = type.__table__()
         # initialize sql parameters if a clause was provided
