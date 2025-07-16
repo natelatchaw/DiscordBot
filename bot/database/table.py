@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+from .clauses import WhereClause
+
 from .column import Column
 
 
@@ -47,7 +49,7 @@ class Table:
 
         return f'{sql} ({delimited_columns})'
 
-    def __select__(self) -> str:
+    def __select__(self, where: Optional[WhereClause] = None) -> str:
         """
         Get the SQL statement responsible for selecting the table
         """
@@ -66,9 +68,14 @@ class Table:
         terms.append('FROM')
         # add the name to the list of terms if it exists
         if self._name: terms.append(self._fully_qualified_name)
-        # join the terms with a space character
-        sql: str = ' '.join(terms)
         
+        # if a where clause was provided
+        if where:
+            # add the where clause to the list of terms
+            terms.append(f'WHERE {where._column_name} = ?')
+
+        # join the terms with a space character
+        sql: str = ' '.join(terms)        
         return f'{sql}'
 
     def __insert__(self) -> str:

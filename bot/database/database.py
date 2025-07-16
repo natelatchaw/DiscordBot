@@ -1,7 +1,9 @@
 import sqlite3
 from pathlib import Path
-from sqlite3 import Connection, Row
-from typing import Iterable, List, Type
+from sqlite3 import _Parameters, Connection, Row
+from typing import Iterable, List, Optional, Type
+
+from .clauses import WhereClause
 
 from ..disk import File
 
@@ -27,11 +29,13 @@ class Database(File):
         # commit the changes
         self._connection.commit()
 
-    def select(self, type: Type[TStorable]) -> Iterable[TStorable]:
+    def select(self, type: Type[TStorable], where: Optional[WhereClause]) -> Iterable[TStorable]:
         # get the table instance
         table: Table = type.__table__()
+        # initialize sql parameters if a clause was provided
+        parameters: _Parameters = (where._value, ) if where else ()
         # execute the table's select statement and fetch all results
-        results: List[Row] = self._connection.cursor().execute(table.__select__()).fetchall()
+        results: List[Row] = self._connection.cursor().execute(table.__select__(), parameters).fetchall()
         # initialize each result from the static class method
         return [type.__from_row__(row) for row in results]
 

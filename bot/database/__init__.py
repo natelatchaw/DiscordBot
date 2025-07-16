@@ -4,6 +4,8 @@ from .database import Database
 from .table import Table, TableBuilder
 from .column import Column, ColumnBuilder
 from .storable import TStorable
+from .clauses import WhereClause
+
 
 __all__: List[str] = [
     "Database",
@@ -14,5 +16,7 @@ __all__: List[str] = [
     "Column",
     "ColumnBuilder",
 
-    "TStorable"
+    "TStorable",
+
+    "WhereClause",
 ]
