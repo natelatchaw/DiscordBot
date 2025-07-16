@@ -81,7 +81,7 @@ class Loader():
         except Exception as exception:
             name: str = directory.name
             action: str = f'loading {directory.name}'
-            log.warn(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
+            log.warning(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
             return
 
         for file_object in file_objects: await self._process_path(file_object, loop=loop, *args, **kwargs)
@@ -100,7 +100,7 @@ class Loader():
         except Exception as exception:
             name: str = file_object.name
             action: str = f'loading {file_object.name}'
-            log.warn(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
+            log.warning(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
             return
         
         for class_object in class_objects: await self._process_class(class_object, loop=loop, *args, **kwargs)
@@ -117,7 +117,7 @@ class Loader():
         except Exception as exception:
             name: str = class_object.__name__
             action: str = f'starting {class_object.__name__}'
-            log.warn(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
+            log.warning(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
             return
 
         for coroutine_object in coroutine_objects: await self._process_coroutine(coroutine_object)
@@ -132,7 +132,7 @@ class Loader():
         except Exception as exception:
             name: str = coroutine_object.__qualname__
             action: str = f'loading {coroutine_object.__name__}'
-            log.warn(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
+            log.warning(f'{name}: {exception.__class__.__name__} occurred {action}: {exception}')
             return
         
     #endregion
@@ -231,7 +231,7 @@ class Loader():
                 _: Task[None] = loop.create_task(awaitable)
             # if an event loop was not provided
             else:
-                log.warn(f'{instance.__class__.__name__}: No {Loader.__name__} event loop available. {instance.__setup__.__name__} will be awaited inline.')
+                log.warning(f'{instance.__class__.__name__}: No {Loader.__name__} event loop available. {instance.__setup__.__name__} will be awaited inline.')
                 # call the setup coroutine
                 await instance.__setup__(*args, **kwargs)
             return
@@ -259,7 +259,7 @@ class Loader():
         try:
             return await coroutine
         except Exception as error:
-            log.warn(f'{message}: {error}')
+            log.warning(f'{message}: {error}')
             raise
         
     #endregion
