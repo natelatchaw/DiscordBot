@@ -74,7 +74,7 @@ class Loader():
         """
 
         # get the configuration section for the class object
-        configuration: MutableMapping = self._settings.application[class_object.__name__]
+        configuration: MutableMapping[str, str] = self._settings.application[class_object.__name__]
         # add a configuration section reference to the initializer kwargs 
         kwargs['config'] = configuration
         kwargs['client'] = self._client

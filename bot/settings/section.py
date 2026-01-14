@@ -1,32 +1,13 @@
 from collections.abc import MutableMapping
 import logging
 from logging import Logger
-import os
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List
 
-from ..configuration import Section
 
 log: Logger = logging.getLogger(__name__)
 
-class TypedAccess(MutableMapping[str, str]):
-
-    def get_environment_variable(self, key: str) -> str:
-        """
-        Gets a string value for a given key from the environment variables.
-
-        Args:
-            key: The key to retrieve a value from.
-
-        Raises:
-            ValueError: If the provided key's value is missing or empty
-        """
-        try:
-            return os.environ.get(key)
-        except KeyError as error:
-            # raise ValueError
-            raise ValueError(f'{key}: Missing {error} environment value') from error
-        
+class TypedAccess(MutableMapping[str, str]):        
 
     def get_string(self, key: str) -> str:
         """
