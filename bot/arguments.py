@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -17,20 +17,15 @@ class Arguments():
         """
         parser.add_argument('--verbose', action='store_true')
         parser.add_argument('--setup', action='store_true')
-        parser.add_argument('--token', required=False)
-        parser.add_argument('--config', type=Path)
-        parser.add_argument('--logging', type=Path)
-        parser.add_argument('--components', type=Path)
+        parser.add_argument('--config', type=Path, help='The directory to store configuration data.')
+        parser.add_argument('--logging', type=Path, help='A path referencing the logging configuration file.')
+        parser.add_argument('--components', type=Path, help='The directory containing components to load.')
         parser.add_argument('--permissions', type=int)
         self._arguments: argparse.Namespace = parser.parse_args()
     
     @property
     def config(self) -> Path:
         return self._arguments.config if self._arguments.config else Path('./config')
-
-    @property
-    def token(self) -> Optional[str]:
-        return self._arguments.token if self._arguments.token else None
     
     @property
     def logging(self) -> Optional[Path]:

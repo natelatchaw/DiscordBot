@@ -4,7 +4,15 @@
 DiscordBot is a discord bot based on [discord.py](https://github.com/Rapptz/discord.py), utilizing dynamic import to find, intialize and register [Application Commands]() implemented as [Python classes](https://docs.python.org/3/tutorial/classes.html). This helps to further abstract boilerplate setup from the command implementation, allowing users to write modular commands and have them imported from a directory.
 
 ## Setup
+This package is intended to be run in the context of a Python module. Once installed via your package manager of choice, this module can be run with the <code>-m</code> flag (e.g., <code>python -m bot</code>).
 
+### Environment Variables
+- <code>TOKEN</code> Your bot token obtained from the Discord Developer Portal.
+
+### Arguments
+- <code>--config</code> A directory in which to store configuration files.
+- <code>--logging</code> A path reference to your [logging configuration file](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat).
+- <code>--components</code> A directory from which your [Components](#components) will be loaded.
 
 ## Packages
 

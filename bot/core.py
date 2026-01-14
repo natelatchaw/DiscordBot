@@ -19,16 +19,12 @@ class Core(Client):
         return self._settings.client.general.permissions
 
     @property
-    def token(self) -> str:
-        return self._settings.client.token.value
-
-    @property
     def directory(self) -> Path:
         return self._settings.client.loader.directory
 
 
-    def __init__(self, *, directory: Optional[str] = None, settings: Optional[Settings] = None) -> None:
-        self._settings: Settings = settings if settings else Settings(Path('./config'))
+    def __init__(self, settings: Settings) -> None:
+        self._settings: Settings = settings
         super().__init__(intents=Intents(self.permissions))
 
 

@@ -56,11 +56,12 @@ class LoaderSection(TypedAccess, Section):
         Raises:
             ValueError: If directory is missing or invalid
         """
-        # arguments override
-        if self._arguments and self._arguments.directory:
+        # if the directory argument was provided
+        if self._arguments and isinstance(self._arguments.directory, Path):
             return self._arguments.directory
-        
-        return self.get_directory('directory')
+        # otherwise
+        else:
+            return self.get_directory('directory')
     @directory.setter
     def directory(self, reference: Path) -> None:
         """

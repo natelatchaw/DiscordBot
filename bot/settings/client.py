@@ -7,8 +7,6 @@ from ..arguments import Arguments
 from ..configuration import Configuration
 from .data import LoaderSection
 from .general import GeneralSection
-from .logger import LoggerSection
-from .token import TokenSection
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -28,7 +26,6 @@ class ClientConfiguration(Configuration):
         """
         Prompts the user for values to apply.
         """
-        self.token.__setup__()
         self.general.__setup__()
         self.loader.__setup__()
 
@@ -36,17 +33,8 @@ class ClientConfiguration(Configuration):
         """
         Checks presence of required values.
         """
-        self.token.__check__()
         self.general.__check__()
         self.loader.__check__()
-
-    @property
-    def token(self) -> TokenSection:
-        """
-        A reference to the `Token` section in 
-        configuration.
-        """
-        return TokenSection(self, path=self._path, args=self._arguments)
     
     @property
     def general(self) -> GeneralSection:
@@ -63,11 +51,3 @@ class ClientConfiguration(Configuration):
         configuration.
         """
         return LoaderSection(self, path=self._path, args=self._arguments)
-
-    @property
-    def logger(self) -> LoggerSection:
-        """
-        A reference to the `Logger` section in 
-        configuration.
-        """
-        return LoggerSection(self, path=self._path, args=self._arguments)

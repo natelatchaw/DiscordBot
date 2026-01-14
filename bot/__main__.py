@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import logging
+import os
 import platform
 import socket
 import sys
@@ -19,19 +20,32 @@ from .settings import Settings
 
 log: logging.Logger = logging.getLogger(__name__)
 
+TOKEN_VARIABLE_NAME: str = 'TOKEN'
+
 parser: argparse.ArgumentParser = argparse.ArgumentParser(prog="Discord Bot", description="A Discord Bot")
 args: Arguments = Arguments(parser)
 
+def get_token(environment_variable_name: str) -> str:
+    token: Optional[str] = os.environ.get(environment_variable_name)
+    if not isinstance(token, str):
+        raise Exception(f'A Discord Developer bot token was not found for environment variable {environment_variable_name}')
+    return token
 
-async def main(client: Optional[Core] = None) -> None:
+def get_logging_config(args: Arguments) -> Path:
+    path: Optional[Path] = args.logging
+    if not isinstance(path, Path):
+        raise Exception(f'A path to the logging configuration file was not provided.')
+    return path
+
+
+async def main(client: Core, token: str) -> None:
     try:
-        client = client if client else Core()
-        await client.start(client.token)
+        await client.start(token)
     except Exception as error:
         log.error(error)
         raise
     finally:
-        if client: await client.close()
+        await client.close()
 
 
 def configure_logger(config: Path, recurse: bool = True) -> None:
@@ -62,14 +76,27 @@ if __name__ == '__main__':
         sys.exit()
 
     try:
-        settings: Settings = Settings(config_path, args=args)
-        settings.__check__('--setup')
-        configure_logger(settings.client.logger.config)
-        client: Core = Core(settings=settings)
         log.info('Bot started.')
         log.info('Using Python v%s', platform.python_version())
         log.info('Using Discord.py v%s', discord.__version__)
-        asyncio.run(main(client))
+
+        # retrieve the path of the logging config file
+        logging_config: Path = get_logging_config(args)
+        # configure the logger
+        configure_logger(logging_config)
+
+        # initialize the settings instance
+        settings: Settings = Settings(config_path, args=args)
+        # check the settings instance
+        settings.__check__('--setup')
+
+        # retrieve the token from the environment
+        token: str = get_token(TOKEN_VARIABLE_NAME)
+        # initialize the Core client
+        client: Core = Core(settings)
+        # start the main async loop
+        asyncio.run(main(client, token))
+
     except KeyboardInterrupt:
         log.info('Bot stopped.')
     except Exception as error:
