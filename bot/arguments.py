@@ -18,10 +18,15 @@ class Arguments():
         parser.add_argument('--verbose', action='store_true')
         parser.add_argument('--setup', action='store_true')
         parser.add_argument('--token', required=False)
+        parser.add_argument('--config', type=Path)
         parser.add_argument('--logging', type=Path)
         parser.add_argument('--components', type=Path)
         parser.add_argument('--permissions', type=int)
         self._arguments: argparse.Namespace = parser.parse_args()
+    
+    @property
+    def config(self) -> Path:
+        return self._arguments.config if self._arguments.config else Path('./config')
 
     @property
     def token(self) -> Optional[str]:

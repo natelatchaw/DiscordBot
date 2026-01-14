@@ -55,7 +55,7 @@ def display_metadata(settings: Settings) -> None:
 
 
 if __name__ == '__main__':
-    config_path: Path = Path('./config')
+    config_path: Path = args.config
     if args.launch_setup: 
         settings: Settings = Settings(config_path, args=args)
         settings.__setup__()
